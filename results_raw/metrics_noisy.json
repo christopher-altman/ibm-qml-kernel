@@ -1,0 +1,13 @@
+{
+  "train_accuracy": 0.8428571428571429,
+  "test_accuracy": 0.6666666666666666,
+  "hardware_backend": "ibm_brisbane",
+  "noise_params": {
+    "T1_us": 200,
+    "T2_us": 135,
+    "single_qubit_error_pct": 0.15,
+    "two_qubit_error_pct": 0.8,
+    "readout_error_pct": 2.5
+  },
+  "shots": 1024
+}

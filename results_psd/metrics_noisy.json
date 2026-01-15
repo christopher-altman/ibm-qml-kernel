@@ -1,0 +1,29 @@
+{
+  "train_accuracy": 0.8571428571428571,
+  "test_accuracy": 0.6666666666666666,
+  "hardware_backend": "ibm_brisbane",
+  "noise_params": {
+    "T1_us": 200,
+    "T2_us": 135,
+    "single_qubit_error_pct": 0.15,
+    "two_qubit_error_pct": 0.8,
+    "readout_error_pct": 2.5
+  },
+  "shots": 1024,
+  "psd_projection": {
+    "enabled": true,
+    "epsilon": 1e-10,
+    "diagnostics": {
+      "train": {
+        "min_eigenvalue_before": -1.2910625353588852e-15,
+        "min_eigenvalue_after": 1e-10,
+        "num_clamped": 9,
+        "trace_original": 70.23339116333216,
+        "trace_projected": 70.23339116423213,
+        "trace_final": 70.23339116333213,
+        "scale_factor": 0.9999999999871859
+      },
+      "test": null
+    }
+  }
+}

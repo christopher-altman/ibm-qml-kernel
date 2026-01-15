@@ -8,6 +8,7 @@ Author: Christopher Altman
 Contact: x@christopheraltman.com
 """
 
+import argparse
 import numpy as np
 import json
 from pathlib import Path
@@ -15,20 +16,26 @@ from datetime import datetime
 
 # Qiskit imports
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+from qiskit.circuit.library import zz_feature_map, real_amplitudes
 from qiskit_aer import AerSimulator
-from qiskit.primitives import BackendSampler, BackendEstimator
+from qiskit.primitives import BackendSamplerV2 as BackendSampler
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
 # Qiskit Machine Learning
 from qiskit_algorithms.optimizers import SPSA, COBYLA
+from qiskit_algorithms.state_fidelities import ComputeUncompute
 from qiskit_machine_learning.algorithms import VQC
-from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
 # Classical ML
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.svm import SVC
+
+# Local utilities
+from kernel_utils import ensure_psd_kernel
+from path_utils import resolve_output_paths
 
 # Visualization
 import matplotlib.pyplot as plt
@@ -37,39 +44,55 @@ plt.switch_backend('Agg')  # Non-interactive backend for server
 class QuantumKernelEstimator:
     """Quantum kernel-based classifier with kernel estimation"""
     
-    def __init__(self, num_features=2, reps=2, shots=1024):
+    def __init__(self, num_features=2, reps=2, shots=1024, psd_project=False, psd_epsilon=1e-10):
         self.num_features = num_features
         self.reps = reps
         self.shots = shots
+        # PSD projection: off by default. Enable to improve robustness under
+        # finite-shot noise or hardware imperfections that cause loss of
+        # positive semidefiniteness in quantum kernel matrices.
+        self.psd_project = psd_project
+        self.psd_epsilon = psd_epsilon
         
         # Feature map for encoding data
-        self.feature_map = ZZFeatureMap(
+        self.feature_map = zz_feature_map(
             feature_dimension=num_features,
             reps=reps,
             entanglement='linear',
             insert_barriers=True
         )
-        
+
         # Ansatz for trainable parameters
-        self.ansatz = RealAmplitudes(
+        self.ansatz = real_amplitudes(
             num_qubits=num_features,
             reps=1,
             insert_barriers=True
         )
-        
+
         # Ideal quantum simulator
-        self.backend = AerSimulator(method='statevector')
-        
-        # Quantum kernel
-        self.kernel = QuantumKernel(
-            feature_map=self.feature_map,
-            quantum_instance=self.backend
-        )
+        self.backend = AerSimulator(method="statevector")
+
+        self.sampler = BackendSampler(backend=self.backend)
+
+        # BackendSamplerV2 uses an Options object (no 'shots' kwarg). Set shots via options when available.
+
+        if hasattr(self.sampler, 'options'):
+
+            if hasattr(self.sampler.options, 'default_shots'):
+
+                self.sampler.options.default_shots = self.shots
+
+            elif hasattr(self.sampler.options, 'shots'):
+
+                self.sampler.options.shots = self.shots
+        fidelity = ComputeUncompute(sampler=self.sampler, shots=self.shots)
+        self.kernel = FidelityQuantumKernel(feature_map=self.feature_map, fidelity=fidelity)
         
         # Results storage
         self.train_kernel = None
         self.test_kernel = None
         self.convergence_history = []
+        self.psd_diagnostics = {'train': None, 'test': None}
         
     def generate_dataset(self, n_samples=100, noise=0.1, test_size=0.3):
         """Generate synthetic binary classification dataset"""
@@ -90,10 +113,16 @@ class QuantumKernelEstimator:
             X2 = X1
         
         # Use BackendSampler for kernel estimation
-        sampler = BackendSampler(backend=self.backend, options={"shots": self.shots})
-        kernel = QuantumKernel(feature_map=self.feature_map, quantum_instance=sampler)
-        
+        sampler = BackendSampler(backend=self.backend)
+        if hasattr(sampler, 'options'):
+            if hasattr(sampler.options, 'default_shots'):
+                sampler.options.default_shots = self.shots
+            elif hasattr(sampler.options, 'shots'):
+                sampler.options.shots = self.shots
+        fidelity = ComputeUncompute(sampler=sampler, shots=self.shots)
+        kernel = FidelityQuantumKernel(feature_map=self.feature_map, fidelity=fidelity)
         kernel_matrix = kernel.evaluate(x_vec=X1, y_vec=X2)
+
         return kernel_matrix
     
     def train_vqc(self, X_train, y_train, max_iter=100):
@@ -114,8 +143,13 @@ class QuantumKernelEstimator:
                 print(f"Iteration {eval_count}: Loss = {value:.4f}")
         
         # VQC with kernel
-        sampler = BackendSampler(backend=self.backend, options={"shots": self.shots})
-        
+        sampler = BackendSampler(backend=self.backend)
+
+        if hasattr(sampler, 'options'):
+            if hasattr(sampler.options, 'default_shots'):
+                sampler.options.default_shots = self.shots
+            elif hasattr(sampler.options, 'shots'):
+                sampler.options.shots = self.shots
         vqc = VQC(
             feature_map=self.feature_map,
             ansatz=self.ansatz,
@@ -133,11 +167,25 @@ class QuantumKernelEstimator:
         """Train classical SVM with quantum kernel"""
         print("Computing quantum kernel matrix for training...")
         self.train_kernel = self.compute_kernel_matrix(X_train)
-        
+
+        # Optional PSD projection before SVM training
+        train_kernel_for_svm = self.train_kernel
+        if self.psd_project:
+            print("  Applying PSD projection to training kernel...")
+            train_kernel_for_svm, diag = ensure_psd_kernel(
+                self.train_kernel,
+                epsilon=self.psd_epsilon,
+                preserve_trace=True,
+                return_diagnostics=True
+            )
+            self.psd_diagnostics['train'] = diag
+            print(f"    Min eigenvalue: {diag['min_eigenvalue_before']:.2e} -> {diag['min_eigenvalue_after']:.2e}")
+            print(f"    Clamped eigenvalues: {diag['num_clamped']}")
+
         # Train SVM with precomputed kernel
         svm = SVC(kernel='precomputed')
-        svm.fit(self.train_kernel, y_train)
-        
+        svm.fit(train_kernel_for_svm, y_train)
+
         return svm
     
     def evaluate(self, model, X_train, X_test, y_train, y_test, model_type='svm'):
@@ -145,10 +193,27 @@ class QuantumKernelEstimator:
         if model_type == 'svm':
             # Compute test kernel
             self.test_kernel = self.compute_kernel_matrix(X_test, X_train)
-            
+
+            # Prepare kernels for prediction (apply PSD projection if enabled)
+            # Note: PSD projection only applies to square (Gram) matrices.
+            # The test kernel K(X_test, X_train) is rectangular and does not
+            # require PSD projection - it's used directly for prediction.
+            train_kernel_for_pred = self.train_kernel
+            test_kernel_for_pred = self.test_kernel
+
+            if self.psd_project:
+                # Training kernel already projected during fit; re-project for consistency
+                train_kernel_for_pred, _ = ensure_psd_kernel(
+                    self.train_kernel,
+                    epsilon=self.psd_epsilon,
+                    preserve_trace=True,
+                    return_diagnostics=True
+                )
+                # Test kernel is rectangular (n_test x n_train), no PSD projection needed
+
             # Predictions
-            train_pred = model.predict(self.train_kernel)
-            test_pred = model.predict(self.test_kernel)
+            train_pred = model.predict(train_kernel_for_pred)
+            test_pred = model.predict(test_kernel_for_pred)
         else:  # VQC
             train_pred = model.predict(X_train)
             test_pred = model.predict(X_test)
@@ -215,56 +280,105 @@ class QuantumKernelEstimator:
         
         print(f"Convergence plot saved to {save_dir}/convergence_ideal.png")
 
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description='Quantum Kernel Estimation - Ideal Simulator'
+    )
+    parser.add_argument(
+        '--output-tag',
+        type=str,
+        default=None,
+        help='Tag for output directories (e.g., raw, psd). Creates results_<tag>/, plots_<tag>/'
+    )
+    parser.add_argument(
+        '--psd-project',
+        action='store_true',
+        help='Enable PSD projection for kernel matrices before SVM training'
+    )
+    parser.add_argument(
+        '--psd-epsilon',
+        type=float,
+        default=1e-10,
+        help='Minimum eigenvalue threshold for PSD projection (default: 1e-10)'
+    )
+    return parser.parse_args()
+
+
 def main():
     """Main execution pipeline"""
+    args = parse_args()
+    paths = resolve_output_paths(args.output_tag)
+    results_dir = paths['results_dir']
+    plots_dir = paths['plots_dir']
+
     print("=" * 70)
     print("Quantum Kernel Estimation - Ideal Simulator")
     print("=" * 70)
-    
+    if args.output_tag:
+        print(f"Output tag: {args.output_tag}")
+    if args.psd_project:
+        print(f"PSD projection: ENABLED (epsilon={args.psd_epsilon})")
+
     # Initialize estimator
-    qke = QuantumKernelEstimator(num_features=2, reps=2, shots=1024)
-    
+    qke = QuantumKernelEstimator(
+        num_features=2,
+        reps=2,
+        shots=1024,
+        psd_project=args.psd_project,
+        psd_epsilon=args.psd_epsilon
+    )
+
     # Generate dataset
     print("\n1. Generating dataset...")
     X_train, X_test, y_train, y_test = qke.generate_dataset(n_samples=100, noise=0.1)
     print(f"   Training samples: {len(X_train)}")
     print(f"   Test samples: {len(X_test)}")
-    
+
     # Train kernel SVM
     print("\n2. Training Kernel SVM...")
     svm_model = qke.train_kernel_svm(X_train, y_train)
-    
+
     # Evaluate
     print("\n3. Evaluating model...")
     results = qke.evaluate(svm_model, X_train, X_test, y_train, y_test, model_type='svm')
-    
+
     print(f"\n   Training Accuracy: {results['train_accuracy']:.4f}")
     print(f"   Test Accuracy: {results['test_accuracy']:.4f}")
-    
+
+    # Add PSD diagnostics to results if enabled
+    if args.psd_project:
+        results['psd_projection'] = {
+            'enabled': True,
+            'epsilon': args.psd_epsilon,
+            'diagnostics': qke.psd_diagnostics
+        }
+
     # Save results
     print("\n4. Saving results...")
-    
+
     # Kernel matrices
-    Path('results').mkdir(exist_ok=True)
-    np.save('results/train_kernel_ideal.npy', qke.train_kernel)
-    np.save('results/test_kernel_ideal.npy', qke.test_kernel)
-    
+    results_dir.mkdir(exist_ok=True)
+    np.save(results_dir / 'train_kernel_ideal.npy', qke.train_kernel)
+    np.save(results_dir / 'test_kernel_ideal.npy', qke.test_kernel)
+
     # Metrics
-    with open('results/metrics_ideal.json', 'w') as f:
+    with open(results_dir / 'metrics_ideal.json', 'w') as f:
         json.dump(results, f, indent=2)
-    
+
     # Visualizations
     print("\n5. Generating visualizations...")
-    qke.visualize_kernels(save_dir='plots')
-    
+    qke.visualize_kernels(save_dir=str(plots_dir))
+
     print("\n" + "=" * 70)
     print("Workflow Complete!")
     print("=" * 70)
     print("\nOutputs:")
-    print("  - results/train_kernel_ideal.npy")
-    print("  - results/test_kernel_ideal.npy")
-    print("  - results/metrics_ideal.json")
-    print("  - plots/kernel_matrices_ideal.png")
+    print(f"  - {results_dir}/train_kernel_ideal.npy")
+    print(f"  - {results_dir}/test_kernel_ideal.npy")
+    print(f"  - {results_dir}/metrics_ideal.json")
+    print(f"  - {plots_dir}/kernel_matrices_ideal.png")
+
 
 if __name__ == "__main__":
     main()

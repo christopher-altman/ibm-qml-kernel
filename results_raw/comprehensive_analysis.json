@@ -1,0 +1,59 @@
+{
+  "kernel_statistics": {
+    "ideal_train": {
+      "name": "ideal_train",
+      "mean": 0.30054251933841547,
+      "std": 0.25282882944329854,
+      "min": -0.004843923358814084,
+      "max": 1.0478997165128352,
+      "trace": 72.07800562878141,
+      "frobenius_norm": 27.492113275391496
+    },
+    "ideal_test": {
+      "name": "ideal_test",
+      "mean": 0.2997349330357143,
+      "std": 0.24499647355365148,
+      "min": 0.0,
+      "max": 1.0,
+      "trace": null,
+      "frobenius_norm": 17.740209538922116
+    },
+    "noisy_train": {
+      "name": "noisy_train",
+      "mean": 0.2949282542058572,
+      "std": 0.22118626182541776,
+      "min": 0.019794243987198656,
+      "max": 1.0074700707887203,
+      "trace": 70.24867914792249,
+      "frobenius_norm": 25.805805238185517
+    },
+    "noisy_test": {
+      "name": "noisy_test",
+      "mean": 0.2921479724702381,
+      "std": 0.2100565578129458,
+      "min": 0.0185546875,
+      "max": 0.896484375,
+      "trace": null,
+      "frobenius_norm": 16.489263480436545
+    }
+  },
+  "kernel_alignments": {
+    "ideal_vs_noisy_train": 0.997184256043334
+  },
+  "accuracy_comparison": {
+    "ideal": {
+      "train": 0.8285714285714286,
+      "test": 0.7
+    },
+    "noisy": {
+      "train": 0.8428571428571429,
+      "test": 0.6666666666666666
+    }
+  },
+  "noise_impact": {
+    "train_kernel_mean_diff": 0.029247577389835418,
+    "train_kernel_max_diff": 0.12627593934613324,
+    "test_kernel_mean_diff": 0.031057942708333335,
+    "test_kernel_max_diff": 0.130859375
+  }
+}

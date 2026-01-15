@@ -44,6 +44,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
 
+# Local utilities
+from kernel_utils import ensure_psd_kernel
+
 # Visualization
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
@@ -51,11 +54,17 @@ plt.switch_backend('Agg')
 class IBMQuantumKernelEstimator:
     """Quantum kernel estimation on IBM Quantum hardware"""
     
-    def __init__(self, num_features=2, reps=2, shots=1024, use_hardware=True):
+    def __init__(self, num_features=2, reps=2, shots=1024, use_hardware=True,
+                 psd_project=False, psd_epsilon=1e-10):
         self.num_features = num_features
         self.reps = reps
         self.shots = shots
         self.use_hardware = use_hardware and IBM_AVAILABLE
+        # PSD projection: off by default. Enable to improve robustness under
+        # finite-shot noise or hardware imperfections that cause loss of
+        # positive semidefiniteness in quantum kernel matrices.
+        self.psd_project = psd_project
+        self.psd_epsilon = psd_epsilon
         
         # Feature map
         self.feature_map = ZZFeatureMap(
@@ -78,6 +87,7 @@ class IBMQuantumKernelEstimator:
             'queue_times': [],
             'execution_times': []
         }
+        self.psd_diagnostics = {'train': None, 'test': None}
         
     def authenticate(self, token=None, channel='ibm_quantum'):
         """Authenticate with IBM Quantum Platform"""
@@ -239,23 +249,43 @@ class IBMQuantumKernelEstimator:
     def train_and_evaluate(self, X_train, X_test, y_train, y_test):
         """Train SVM with hardware quantum kernel"""
         print("\nComputing quantum kernels...")
-        
+
         # Compute kernels (may run on real hardware)
         start = datetime.now()
         self.train_kernel = self.compute_kernel_hardware(X_train)
         self.test_kernel = self.compute_kernel_hardware(X_test, X_train)
         total_time = (datetime.now() - start).total_seconds()
-        
+
         print(f"Total kernel computation time: {total_time:.2f}s")
-        
+
+        # Optional PSD projection before SVM training
+        train_kernel_for_svm = self.train_kernel
+        test_kernel_for_pred = self.test_kernel
+
+        if self.psd_project:
+            # Note: PSD projection only applies to square (Gram) matrices.
+            # The test kernel K(X_test, X_train) is rectangular and does not
+            # require PSD projection - it's used directly for prediction.
+            print("\nApplying PSD projection to training kernel...")
+            train_kernel_for_svm, diag_train = ensure_psd_kernel(
+                self.train_kernel,
+                epsilon=self.psd_epsilon,
+                preserve_trace=True,
+                return_diagnostics=True
+            )
+            self.psd_diagnostics['train'] = diag_train
+            print(f"  Train kernel - min eigenvalue: {diag_train['min_eigenvalue_before']:.2e} -> {diag_train['min_eigenvalue_after']:.2e}")
+            print(f"  Train kernel - clamped eigenvalues: {diag_train['num_clamped']}")
+            # Test kernel is rectangular (n_test x n_train), no PSD projection needed
+
         # Train SVM
         print("\nTraining SVM...")
         svm = SVC(kernel='precomputed')
-        svm.fit(self.train_kernel, y_train)
-        
+        svm.fit(train_kernel_for_svm, y_train)
+
         # Evaluate
-        train_pred = svm.predict(self.train_kernel)
-        test_pred = svm.predict(self.test_kernel)
+        train_pred = svm.predict(train_kernel_for_svm)
+        test_pred = svm.predict(test_kernel_for_pred)
         
         results = {
             'train_accuracy': float(accuracy_score(y_train, train_pred)),

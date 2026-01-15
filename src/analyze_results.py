@@ -7,11 +7,14 @@ Author: Christopher Altman
 Contact: x@christopheraltman.com
 """
 
+import argparse
 import numpy as np
 import json
 from pathlib import Path
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
+
+from path_utils import resolve_output_paths, get_analysis_report_path, get_analysis_json_path
 
 class KernelAnalyzer:
     """Analyze and compare quantum kernel estimation results"""
@@ -302,49 +305,79 @@ This report analyzes quantum kernel estimation across three implementations:
         
         return report
 
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description='Comprehensive Analysis of Quantum Kernel Estimation Results'
+    )
+    parser.add_argument(
+        '--output-tag',
+        type=str,
+        default=None,
+        help='Tag for input/output directories (e.g., raw, psd). Reads from results_<tag>/, writes to plots_<tag>/'
+    )
+    return parser.parse_args()
+
+
 def main():
     """Main analysis pipeline"""
+    args = parse_args()
+    paths = resolve_output_paths(args.output_tag)
+    results_dir = paths['results_dir']
+    plots_dir = paths['plots_dir']
+    docs_dir = paths['docs_dir']
+
     print("=" * 70)
     print("Quantum Kernel Estimation - Comprehensive Analysis")
     print("=" * 70)
-    
+    if args.output_tag:
+        print(f"Output tag: {args.output_tag}")
+        print(f"Reading from: {results_dir}")
+        print(f"Writing plots to: {plots_dir}")
+
+    # Ensure docs directory exists
+    docs_dir.mkdir(exist_ok=True)
+
     # Initialize analyzer
-    analyzer = KernelAnalyzer(results_dir='results', plots_dir='plots')
-    
+    analyzer = KernelAnalyzer(results_dir=str(results_dir), plots_dir=str(plots_dir))
+
     # Perform analysis
     print("\nPerforming comprehensive analysis...")
     analysis = analyzer.analyze_all()
-    
+
     # Create visualizations
     print("\n" + "=" * 60)
     print("GENERATING VISUALIZATIONS")
     print("=" * 60)
     analyzer.create_comparison_plots()
-    
+
     # Save analysis
     print("\n" + "=" * 60)
     print("SAVING ANALYSIS RESULTS")
     print("=" * 60)
-    
-    with open('results/comprehensive_analysis.json', 'w') as f:
+
+    analysis_json_path = get_analysis_json_path(args.output_tag)
+    with open(analysis_json_path, 'w') as f:
         json.dump(analysis, f, indent=2)
-    print("✓ Saved comprehensive_analysis.json")
-    
+    print(f"✓ Saved {analysis_json_path}")
+
     # Generate report
     report = analyzer.generate_summary_report(analysis)
-    with open('docs/analysis_report.md', 'w') as f:
+    report_path = get_analysis_report_path(args.output_tag)
+    with open(report_path, 'w') as f:
         f.write(report)
-    print("✓ Saved docs/analysis_report.md")
-    
+    print(f"✓ Saved {report_path}")
+
     print("\n" + "=" * 70)
     print("Analysis Complete!")
     print("=" * 70)
     print("\nGenerated Files:")
-    print("  - results/comprehensive_analysis.json")
-    print("  - docs/analysis_report.md")
-    print("  - plots/kernel_comparison_all.png")
-    print("  - plots/accuracy_comparison.png")
-    print("  - plots/kernel_error_heatmap.png")
+    print(f"  - {analysis_json_path}")
+    print(f"  - {report_path}")
+    print(f"  - {plots_dir}/kernel_comparison_all.png")
+    print(f"  - {plots_dir}/accuracy_comparison.png")
+    print(f"  - {plots_dir}/kernel_error_heatmap.png")
+
 
 if __name__ == "__main__":
     main()

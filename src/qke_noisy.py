@@ -8,28 +8,34 @@ Author: Christopher Altman
 Contact: x@christopheraltman.com
 """
 
+import argparse
 import numpy as np
 import json
 from pathlib import Path
 
 # Qiskit imports
 from qiskit import QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap, RealAmplitudes
+from qiskit.circuit.library import zz_feature_map, real_amplitudes
 from qiskit_aer import AerSimulator
 from qiskit_aer.noise import (
     NoiseModel, thermal_relaxation_error,
     depolarizing_error, pauli_error, ReadoutError
 )
-from qiskit.primitives import BackendSampler
+from qiskit_algorithms.state_fidelities import ComputeUncompute
+from qiskit.primitives import BackendSamplerV2 as BackendSampler
 
 # Qiskit Machine Learning
-from qiskit_machine_learning.kernels import QuantumKernel
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
 
 # Classical ML
 from sklearn.datasets import make_moons
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.svm import SVC
+
+# Local utilities
+from kernel_utils import ensure_psd_kernel
+from path_utils import resolve_output_paths
 
 # Visualization
 import matplotlib.pyplot as plt
@@ -39,10 +45,15 @@ class NoisyQuantumKernelEstimator:
     """Quantum kernel with realistic IBM hardware noise"""
     
     def __init__(self, hardware_params_path='data/ibm_hardware_params_2026.json',
-                 num_features=2, reps=2, shots=1024):
+                 num_features=2, reps=2, shots=1024, psd_project=False, psd_epsilon=1e-10):
         self.num_features = num_features
         self.reps = reps
         self.shots = shots
+        # PSD projection: off by default. Enable to improve robustness under
+        # finite-shot noise or hardware imperfections that cause loss of
+        # positive semidefiniteness in quantum kernel matrices.
+        self.psd_project = psd_project
+        self.psd_epsilon = psd_epsilon
         
         # Load hardware parameters
         with open(hardware_params_path, 'r') as f:
@@ -52,10 +63,11 @@ class NoisyQuantumKernelEstimator:
         print(f"Processor: {self.hw_params['processor_family']}")
         
         # Feature map and ansatz
-        self.feature_map = ZZFeatureMap(
+        self.feature_map = zz_feature_map(
             feature_dimension=num_features,
             reps=reps,
-            entanglement='linear'
+            entanglement='linear',
+            insert_barriers=False
         )
         
         # Build noise model
@@ -63,10 +75,26 @@ class NoisyQuantumKernelEstimator:
         
         # Noisy simulator
         self.backend = AerSimulator(noise_model=self.noise_model)
-        
+
+        self.sampler = BackendSampler(backend=self.backend)
+
+        # BackendSamplerV2 uses an Options object (no 'shots' kwarg). Set shots via options when available.
+
+        if hasattr(self.sampler, 'options'):
+
+            if hasattr(self.sampler.options, 'default_shots'):
+
+                self.sampler.options.default_shots = self.shots
+
+            elif hasattr(self.sampler.options, 'shots'):
+
+                self.sampler.options.shots = self.shots
+        fidelity = ComputeUncompute(sampler=self.sampler, shots=self.shots)
+        self.kernel = FidelityQuantumKernel(feature_map=self.feature_map, fidelity=fidelity)
         # Results
         self.train_kernel = None
         self.test_kernel = None
+        self.psd_diagnostics = {'train': None, 'test': None}
         
     def _build_noise_model(self):
         """Construct realistic noise model from hardware parameters"""
@@ -143,29 +171,53 @@ class NoisyQuantumKernelEstimator:
         """Compute noisy quantum kernel matrix"""
         if X2 is None:
             X2 = X1
-        
-        sampler = BackendSampler(backend=self.backend, options={"shots": self.shots})
-        kernel = QuantumKernel(feature_map=self.feature_map, quantum_instance=sampler)
-        
+        sampler = BackendSampler(backend=self.backend)
+        if hasattr(sampler, 'options'):
+            if hasattr(sampler.options, 'default_shots'):
+                sampler.options.default_shots = self.shots
+            elif hasattr(sampler.options, 'shots'):
+                sampler.options.shots = self.shots
+        fidelity = ComputeUncompute(sampler=sampler, shots=self.shots)
+        kernel = FidelityQuantumKernel(feature_map=self.feature_map, fidelity=fidelity)
         kernel_matrix = kernel.evaluate(x_vec=X1, y_vec=X2)
         return kernel_matrix
     
     def train_and_evaluate(self, X_train, X_test, y_train, y_test):
         """Train SVM with noisy quantum kernel"""
         print("\nComputing noisy quantum kernel matrices...")
-        
+
         # Compute kernels
         self.train_kernel = self.compute_kernel_matrix(X_train)
         self.test_kernel = self.compute_kernel_matrix(X_test, X_train)
-        
+
+        # Optional PSD projection before SVM training
+        train_kernel_for_svm = self.train_kernel
+        test_kernel_for_pred = self.test_kernel
+
+        if self.psd_project:
+            # Note: PSD projection only applies to square (Gram) matrices.
+            # The test kernel K(X_test, X_train) is rectangular and does not
+            # require PSD projection - it's used directly for prediction.
+            print("Applying PSD projection to training kernel...")
+            train_kernel_for_svm, diag_train = ensure_psd_kernel(
+                self.train_kernel,
+                epsilon=self.psd_epsilon,
+                preserve_trace=True,
+                return_diagnostics=True
+            )
+            self.psd_diagnostics['train'] = diag_train
+            print(f"  Train kernel - min eigenvalue: {diag_train['min_eigenvalue_before']:.2e} -> {diag_train['min_eigenvalue_after']:.2e}")
+            print(f"  Train kernel - clamped eigenvalues: {diag_train['num_clamped']}")
+            # Test kernel is rectangular (n_test x n_train), no PSD projection needed
+
         # Train SVM
         print("Training SVM with noisy kernel...")
         svm = SVC(kernel='precomputed')
-        svm.fit(self.train_kernel, y_train)
-        
+        svm.fit(train_kernel_for_svm, y_train)
+
         # Evaluate
-        train_pred = svm.predict(self.train_kernel)
-        test_pred = svm.predict(self.test_kernel)
+        train_pred = svm.predict(train_kernel_for_svm)
+        test_pred = svm.predict(test_kernel_for_pred)
         
         train_acc = accuracy_score(y_train, train_pred)
         test_acc = accuracy_score(y_test, test_pred)
@@ -212,12 +264,12 @@ class NoisyQuantumKernelEstimator:
         
         print(f"Noisy kernel visualization saved")
     
-    def compare_with_ideal(self, save_dir='plots'):
+    def compare_with_ideal(self, save_dir='plots', results_dir='results'):
         """Compare noisy vs ideal kernels"""
         # Load ideal kernels
         try:
-            ideal_train = np.load('results/train_kernel_ideal.npy')
-            ideal_test = np.load('results/test_kernel_ideal.npy')
+            ideal_train = np.load(f'{results_dir}/train_kernel_ideal.npy')
+            ideal_test = np.load(f'{results_dir}/test_kernel_ideal.npy')
             
             # Compute differences
             train_diff = np.abs(self.train_kernel - ideal_train)
@@ -267,63 +319,108 @@ class NoisyQuantumKernelEstimator:
             print("Ideal kernel files not found - run qke_model.py first")
             return None
 
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description='Quantum Kernel Estimation - Noisy Simulator (IBM Hardware)'
+    )
+    parser.add_argument(
+        '--output-tag',
+        type=str,
+        default=None,
+        help='Tag for output directories (e.g., raw, psd). Creates results_<tag>/, plots_<tag>/'
+    )
+    parser.add_argument(
+        '--psd-project',
+        action='store_true',
+        help='Enable PSD projection for kernel matrices before SVM training'
+    )
+    parser.add_argument(
+        '--psd-epsilon',
+        type=float,
+        default=1e-10,
+        help='Minimum eigenvalue threshold for PSD projection (default: 1e-10)'
+    )
+    return parser.parse_args()
+
+
 def main():
     """Main execution pipeline"""
+    args = parse_args()
+    paths = resolve_output_paths(args.output_tag)
+    results_dir = paths['results_dir']
+    plots_dir = paths['plots_dir']
+
     print("=" * 70)
     print("Quantum Kernel Estimation - Noisy Simulator (IBM Hardware)")
     print("=" * 70)
-    
+    if args.output_tag:
+        print(f"Output tag: {args.output_tag}")
+    if args.psd_project:
+        print(f"PSD projection: ENABLED (epsilon={args.psd_epsilon})")
+
     # Initialize with hardware parameters
     qke = NoisyQuantumKernelEstimator(
         hardware_params_path='data/ibm_hardware_params_2026.json',
         num_features=2,
         reps=2,
-        shots=1024
+        shots=1024,
+        psd_project=args.psd_project,
+        psd_epsilon=args.psd_epsilon
     )
-    
+
     # Generate dataset
     print("\n1. Generating dataset...")
     X_train, X_test, y_train, y_test = qke.generate_dataset(n_samples=100, noise=0.1)
-    
+
     # Train and evaluate
     print("\n2. Training with noisy quantum kernel...")
     results, model = qke.train_and_evaluate(X_train, X_test, y_train, y_test)
-    
+
     print(f"\n   Training Accuracy: {results['train_accuracy']:.4f}")
     print(f"   Test Accuracy: {results['test_accuracy']:.4f}")
-    
+
+    # Add PSD diagnostics to results if enabled
+    if args.psd_project:
+        results['psd_projection'] = {
+            'enabled': True,
+            'epsilon': args.psd_epsilon,
+            'diagnostics': qke.psd_diagnostics
+        }
+
     # Save results
     print("\n3. Saving results...")
-    Path('results').mkdir(exist_ok=True)
-    
-    np.save('results/train_kernel_noisy.npy', qke.train_kernel)
-    np.save('results/test_kernel_noisy.npy', qke.test_kernel)
-    
-    with open('results/metrics_noisy.json', 'w') as f:
+    results_dir.mkdir(exist_ok=True)
+
+    np.save(results_dir / 'train_kernel_noisy.npy', qke.train_kernel)
+    np.save(results_dir / 'test_kernel_noisy.npy', qke.test_kernel)
+
+    with open(results_dir / 'metrics_noisy.json', 'w') as f:
         json.dump(results, f, indent=2)
-    
+
     # Visualizations
     print("\n4. Generating visualizations...")
-    qke.visualize_kernels(save_dir='plots')
-    
+    qke.visualize_kernels(save_dir=str(plots_dir))
+
     # Compare with ideal
     print("\n5. Comparing with ideal simulation...")
-    noise_stats = qke.compare_with_ideal(save_dir='plots')
-    
+    noise_stats = qke.compare_with_ideal(save_dir=str(plots_dir), results_dir=str(results_dir))
+
     if noise_stats:
-        with open('results/noise_impact_stats.json', 'w') as f:
+        with open(results_dir / 'noise_impact_stats.json', 'w') as f:
             json.dump(noise_stats, f, indent=2)
-    
+
     print("\n" + "=" * 70)
     print("Noisy Simulation Complete!")
     print("=" * 70)
     print("\nOutputs:")
-    print("  - results/train_kernel_noisy.npy")
-    print("  - results/test_kernel_noisy.npy")
-    print("  - results/metrics_noisy.json")
-    print("  - results/noise_impact_stats.json")
-    print("  - plots/kernel_matrices_noisy.png")
-    print("  - plots/noise_impact_comparison.png")
+    print(f"  - {results_dir}/train_kernel_noisy.npy")
+    print(f"  - {results_dir}/test_kernel_noisy.npy")
+    print(f"  - {results_dir}/metrics_noisy.json")
+    print(f"  - {results_dir}/noise_impact_stats.json")
+    print(f"  - {plots_dir}/kernel_matrices_noisy.png")
+    print(f"  - {plots_dir}/noise_impact_comparison.png")
+
 
 if __name__ == "__main__":
     main()
