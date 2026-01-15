@@ -1,0 +1,68 @@
+{
+  "backend_name": "ibm_brisbane",
+  "processor_family": "Eagle r3",
+  "num_qubits": 127,
+  "basis_gates": ["ECR", "RZ", "SX", "ID", "X"],
+  "topology": "heavy_hexagonal",
+  "connectivity_degree": "2-3",
+  
+  "coherence_times": {
+    "T1_median_us": 200,
+    "T1_range_us": [100, 400],
+    "T2_median_us": 135,
+    "T2_range_us": [100, 200],
+    "description": "Relaxation (T1) and dephasing (T2) times in microseconds"
+  },
+  
+  "gate_errors": {
+    "single_qubit": {
+      "median_percent": 0.15,
+      "range_percent": [0.05, 0.5],
+      "description": "Single-qubit gate fidelity (SX, RZ, X)"
+    },
+    "two_qubit_ECR": {
+      "median_percent": 0.8,
+      "best_percent": 0.35,
+      "range_percent": [0.35, 1.5],
+      "description": "Echoed Cross-Resonance gate errors"
+    }
+  },
+  
+  "readout_errors": {
+    "median_percent": 2.5,
+    "range_percent": [1.0, 10.0],
+    "description": "Measurement fidelity errors"
+  },
+  
+  "qubit_frequencies": {
+    "median_GHz": 4.8,
+    "range_GHz": [4.0, 5.5],
+    "description": "Transmon qubit transition frequencies"
+  },
+  
+  "anharmonicity_MHz": -330,
+  "readout_length_ns": 6000,
+  
+  "reference_systems": {
+    "ibm_brisbane": "127-qubit Eagle r3, public access",
+    "ibm_kyoto": "127-qubit Eagle r3, public access",
+    "ibm_sherbrooke": "127-qubit Eagle r3, premium (best calibrated)",
+    "ibm_torino": "133-qubit Heron r1, 3-5x better performance than Eagle"
+  },
+  
+  "calibration_date": "2026-01-10",
+  "data_sources": [
+    "IBM Quantum Platform Documentation",
+    "Journal of Supercomputing (April 2025)",
+    "Nature: npj Quantum Information (July 2024)",
+    "IBM Quantum Blog: Eagle Performance"
+  ],
+  
+  "noise_model_notes": {
+    "thermal_relaxation": "Apply T1/T2 to all qubits",
+    "depolarizing_error": "Single and two-qubit gate errors",
+    "readout_error": "State assignment confusion matrix",
+    "crosstalk": "Minimal in Eagle r3 compared to earlier processors",
+    "recommended_shots": 1024
+  }
+}

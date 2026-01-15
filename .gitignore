@@ -1,0 +1,82 @@
+# ---- OS / Editor ----
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+
+# ---- Python bytecode / caches ----
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Virtual environments ----
+.venv/
+venv/
+env/
+ENV/
+pip-wheel-metadata/
+
+# ---- Packaging / build artifacts ----
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+
+# ---- Coverage ----
+.coverage
+coverage.xml
+htmlcov/
+
+# ---- Logs ----
+logs/
+*.log
+
+# ---- Experiment outputs / local scratch (keep repo clean) ----
+experiments/outputs/
+outputs/
+runs/
+tmp/
+temp/
+docs/
+
+# ---- Project-specific ----
+*.zip
+phase_diagram_data.json
+
+# ---- Private working notes (not for public repo) ----
+
+private/
+
+cleanup_for_github.sh
+results/
+
+release_assets/
+
+# Local runs / generated artifacts
+run1/
+run2/
+results/
+figures/
+
+# Local patch exports / reports
+*.patch
+
+# Local-only files (do not track)
+.mailmap
+scripts/
+
+# local tooling (never commit)
+tools/
+
+# local git hooks / tooling
+.githooks/
+.githook/

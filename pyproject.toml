@@ -1,0 +1,45 @@
+[project]
+name = "ibm-qml-kernel"
+version = "0.1.0"
+description = "Quantum kernel methods on IBM Quantum hardware with 2026-calibrated noise models"
+requires-python = ">=3.10"
+authors = [
+    {name = "Christopher Altman", email = "x@christopheraltman.com"}
+]
+keywords = ["quantum-ml", "qml", "qiskit", "ibm-quantum", "machine-learning"]
+
+dependencies = [
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+    "qiskit>=1.0.0",
+    "qiskit-aer>=0.14.0",
+    "qiskit-machine-learning>=0.7.0",
+    "qiskit-ibm-runtime>=0.20.0",
+    "scikit-learn>=1.3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+addopts = "-v --tb=short"
