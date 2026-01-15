@@ -1,6 +1,6 @@
 # Quantum Kernel Methods on IBM Quantum Hardware
 
-*Quantum kernel estimation for binary classification with realistic IBM Quantum hardware noise modeling. Demonstrates full integration with IBM's 127-qubit Eagle processors using 2026-calibrated parameters (T1~200µs, T2~135µs, ECR gate error~0.8%).*
+*Quantum kernel estimation for binary classification with realistic IBM Quantum hardware noise modeling. Demonstrates full integration with IBM's 127-qubit Eagle processors using 2026-calibrated parameters.*
 
 <br>
 
