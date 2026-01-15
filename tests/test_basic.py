@@ -74,10 +74,11 @@ def test_dataset_generation():
 def test_quantum_circuit_creation():
     """Test quantum circuit construction"""
     try:
-        from qiskit.circuit.library import ZZFeatureMap
-        
-        feature_map = ZZFeatureMap(feature_dimension=2, reps=2, entanglement='linear')
-        
+        from qiskit.circuit.library import zz_feature_map
+
+        # Using function API (Qiskit 2.1+) - returns QuantumCircuit directly
+        feature_map = zz_feature_map(feature_dimension=2, reps=2, entanglement='linear')
+
         assert feature_map.num_qubits == 2
         assert feature_map.num_parameters == 2  # 2 features to encode
         print("✓ Quantum circuit test passed")

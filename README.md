@@ -23,7 +23,7 @@
 
 <br>
 
-> **TL;DR:** Realistic IBM Quantum noise (T1~200µs, T2~135µs, ECR error~0.8%) degrades quantum kernel fidelity by ~5-15% but classification capability persists. PSD projection ensures numerical stability under finite-shot noise with negligible impact on well-conditioned kernels.
+> **TL;DR:** Realistic IBM Quantum noise (T1≈200 µs, T2≈135 µs, ECR error≈0.8%) degrades quantum kernel fidelity by 5–15% but classification capability persists. PSD projection ensures numerical stability under finite-shot noise with negligible impact on well-conditioned kernels.
 
 ---
 
@@ -57,13 +57,13 @@
 Quantum kernel methods embed classical data into quantum Hilbert space via parameterized quantum circuits (feature maps), then compute kernel matrices from overlap fidelities between quantum states:
 
 $$
-K(x_i, x_j) = |\langle \phi(x_i) | \phi(x_j) \rangle|^2
+K(x_i, x_j) = \bigl|\langle \phi(x_i) \mid \phi(x_j) \rangle\bigr|^2
 $$
 
-where $|\phi(x)\rangle = U(x)|0\rangle^{\otimes n}$ is the feature-mapped quantum state. This project uses the **ZZFeatureMap** from Qiskit, which encodes classical features through single-qubit rotations and ZZ entangling gates:
+where the feature-mapped quantum state is $\lvert\phi(x)\rangle = U(x)\lvert 0\rangle^{\otimes n}$. This project uses the **ZZFeatureMap** from Qiskit, which encodes classical features through single-qubit rotations and ZZ entangling gates:
 
 $$
-U_{ZZ}(x) = \exp\left(i \sum_{i<j} (\pi - x_i)(\pi - x_j) Z_i Z_j\right) \prod_i R_Z(x_i) H_i
+U_{\mathrm{ZZ}}(\mathbf{x}) = \exp\Bigl(i \sum_{i < j} (\pi - x_i)(\pi - x_j)\, Z_i Z_j\Bigr) \prod_{k} R_z(x_k)\, H_k
 $$
 
 The resulting kernel matrix is used with a classical SVM for binary classification.
@@ -116,7 +116,7 @@ python src/qke_noisy.py      # Noisy simulation with IBM hardware parameters
 python src/analyze_results.py # Generate analysis report
 ```
 
-**Expected runtime:** ~2-3 minutes on CPU
+**Expected runtime:** 2–3 minutes on CPU
 
 ---
 
@@ -126,8 +126,8 @@ This project implements three quantum kernel estimation modes:
 
 | Mode | Script | Description | Runtime |
 |------|--------|-------------|---------|
-| **Ideal** | `qke_model.py` | Perfect quantum operations (statevector) | ~30-60s |
-| **Noisy** | `qke_noisy.py` | IBM hardware noise model (2026 calibration) | ~1-2 min |
+| **Ideal** | `qke_model.py` | Perfect quantum operations (statevector) | 30–60 s |
+| **Noisy** | `qke_noisy.py` | IBM hardware noise model (2026 calibration) | 1–2 min |
 | **Hardware** | `qke_full.py` | IBM Quantum Platform API integration | 5-30 min |
 
 ### Hardware Access
@@ -232,7 +232,7 @@ Results from the RAW vs PSD experiment (100 samples, 70/30 train/test split):
 | Noisy Train | 1.209 | 1.3% | 6.8% |
 | Noisy Test | 0.796 | 1.3% | 7.1% |
 
-**Key Finding:** PSD projection has minimal impact on well-conditioned kernels (negative eigenvalues at ~1e-15 level are numerical noise, not physical). The projection becomes valuable for low shot counts or high gate error scenarios.
+**Key Finding:** PSD projection has minimal impact on well-conditioned kernels (negative eigenvalues at the 1e-15 level are numerical noise, not physical). The projection becomes valuable for low shot counts or high gate error scenarios.
 
 ---
 
@@ -332,7 +332,7 @@ python tools/compare_raw_vs_psd.py
 ### Kernel Matrices
 
 Kernel matrices represent quantum state overlap (similarity):
-- **Diagonal elements**: Self-similarity (should be ~1.0)
+- **Diagonal elements**: Self-similarity (should be ≈1.0)
 - **Off-diagonal elements**: Cross-similarity (affected by noise)
 - **Color intensity**: Higher values = more similar quantum states
 

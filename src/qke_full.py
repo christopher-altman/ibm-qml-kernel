@@ -16,7 +16,7 @@ import time
 
 # Qiskit imports
 from qiskit import transpile, QuantumCircuit
-from qiskit.circuit.library import ZZFeatureMap
+from qiskit.circuit.library import zz_feature_map
 from qiskit_aer import AerSimulator
 from qiskit_aer.noise import NoiseModel
 
@@ -66,8 +66,8 @@ class IBMQuantumKernelEstimator:
         self.psd_project = psd_project
         self.psd_epsilon = psd_epsilon
         
-        # Feature map
-        self.feature_map = ZZFeatureMap(
+        # Feature map (using function API - Qiskit 2.1+)
+        self.feature_map = zz_feature_map(
             feature_dimension=num_features,
             reps=reps,
             entanglement='linear'
