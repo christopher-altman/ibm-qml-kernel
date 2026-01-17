@@ -376,10 +376,10 @@ Motivated by Violaris' proposal of an inter-branch communication protocol in a W
 - **W_X and W_Y**: Multi-qubit parity correlators on (Q,R,F,P) after basis rotations
   - W_X = ⟨X_Q ⊗ X_R ⊗ X_F ⊗ X_P⟩ (measures coherence in X-basis)
   - W_Y = ⟨Y_Q ⊗ Y_R ⊗ Y_F ⊗ Y_P⟩ (measures coherence in Y-basis)
-- **C_magnitude** = sqrt(W_X² + W_Y²): Phase-independent coherence magnitude
+- **C_magnitude** = sqrt(W_X² + W_Y²): Phase-robust magnitude
 
 **Critical interpretation constraints:**
-- C_magnitude is **NOT** bounded by 1 and must not be described as a "coherence fraction" or probability. It is a correlation magnitude that can exceed 1.
+- C_magnitude is **NOT** bounded by 1 and must not be described as a "coherence fraction" or probability. It is a correlation magnitude that can exceed 1. Since W_X, W_Y ∈ [-1,1], we have C_magnitude ≤ √2 for Pauli correlators.
 - W_Y_ideal = 0 in this dataset; therefore, normalized Y coherence (W̃_Y) is undefined. Raw W_Y is still reported and physically meaningful.
 
 **Related work:** See Violaris (2026, arXiv:2601.08102) for the conceptual framing of inter-branch communication protocols.
