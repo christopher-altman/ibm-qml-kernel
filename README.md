@@ -7,7 +7,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Google Scholar](https://img.shields.io/badge/Google_Scholar-Profile-blue?logo=google-scholar)](https://scholar.google.com/citations?user=tvwpCcgAAAAJ)
-[![Hugging Face](https://img.shields.io/badge/huggingface-Cohaerence-white)](https://huggingface.co/Cohaerence)
+[![Hugging Face](https://img.shields.io/badge/huggingface-Coh%C3%A6rence-white)](https://huggingface.co/Cohaerence)
 
 [![CI](https://github.com/christopher-altman/ibm-qml-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/christopher-altman/ibm-qml-kernel/actions/workflows/ci.yml)
 [![X](https://img.shields.io/badge/X-@coherence-blue)](https://x.com/coherence)
@@ -464,7 +464,7 @@ python -m experiments.branch_transfer.run_ibm --backend ibm_fez --mode rp_z --mu
 | **W_Y** (Y coherence) | -0.8107 ± 0.0041 | 0.0000* | -0.8972 |
 | **C_magnitude** | 1.1673 ± 0.0040 | 1.4142 | 1.2697 |
 
-*W_Y_ideal = 0 is expected for this protocol configuration (mu=1, main circuit); the raw W_Y value is physically meaningful.
+*Although the theoretical ideal statevector gives W_Y = −1, the stored artifact field W_Y_ideal is recorded as 0 in this dataset due to how combined X/Y ideal baselines are merged, so Y-normalization is undefined and we report raw W_Y only.
 
 **Key finding:** Hardware visibility (V=0.877) closely matched backend-matched simulation (V=0.938), demonstrating robust protocol performance. The coherence magnitude C = 1.167 confirms preservation of quantum coherence despite hardware noise.
 

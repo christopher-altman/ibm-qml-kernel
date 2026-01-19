@@ -19,6 +19,12 @@ import glob
 import matplotlib.pyplot as plt
 plt.switch_backend('Agg')
 
+from experiments.branch_transfer.paper_style import set_paper_style, export_fig, clean_spine, add_faint_grid
+from experiments.branch_transfer.hero_style import (
+    set_hero_style, export_hero_fig, clean_hero_spines, add_hero_grid, get_hero_colors,
+    add_subtle_vignette, apply_bar_gradient
+)
+
 
 def load_results(artifacts_dir: Path, pattern: str = '*.json') -> List[dict]:
     """
@@ -175,7 +181,9 @@ def compute_bootstrap_ci(
 def plot_pr_distribution(
     results: List[dict],
     output_path: Path,
-    title: str = 'PR Distribution'
+    title: str = 'PR Distribution',
+    _hero_mode: bool = False,
+    _hero_theme: str = 'light'
 ):
     """
     Create bar plot of PR distribution for multiple backends/modes.
@@ -188,8 +196,14 @@ def plot_pr_distribution(
         Path to save plot.
     title : str
         Plot title.
+    _hero_mode : bool
+        Internal: whether generating hero figure
+    _hero_theme : str
+        Internal: 'light' or 'dark' theme for hero
     """
-    fig, ax = plt.subplots(figsize=(10, 6))
+    # Hero uses wider banner aspect ratio
+    figsize = (14, 5) if _hero_mode else (7, 5)
+    fig, ax = plt.subplots(figsize=figsize)
 
     # All possible bitstrings
     bitstrings = ['00', '01', '10', '11']
@@ -204,32 +218,47 @@ def plot_pr_distribution(
         probs = result.get('probabilities', {})
         heights = [probs.get(bs, 0) for bs in bitstrings]
 
-        ax.bar(x + i * width, heights, width, label=label, alpha=0.8)
+        ax.bar(x + i * width, heights, width, label=label, alpha=0.75)
 
-    ax.set_xlabel('Bitstring PR (c[1]c[0] = Paper, Room)', fontsize=12)
-    ax.set_ylabel('Probability', fontsize=12)
-    ax.set_title(title, fontsize=14)
+    ax.set_xlabel('Bitstring PR (c[1]c[0] = Paper, Room)')
+    ax.set_ylabel('Probability')
+    ax.set_title(title)
     ax.set_xticks(x + width * (len(results) - 1) / 2)
     ax.set_xticklabels(bitstrings)
-    ax.legend(loc='upper right')
-    ax.set_ylim(0, 1)
-    ax.grid(axis='y', alpha=0.3)
+    ax.legend(loc='upper right', framealpha=0.95)
+    ax.set_ylim(0, 1.05)
 
-    # Add ideal reference lines
-    ax.axhline(y=0.5, color='gray', linestyle='--', alpha=0.5, label='Ideal 50%')
+    if _hero_mode:
+        # Set text colors for hero theme
+        text_color = '#1A1A1A' if _hero_theme == 'light' else '#E8E8E8'
+        ax.title.set_color(text_color)
+        ax.xaxis.label.set_color(text_color)
+        ax.yaxis.label.set_color(text_color)
+        ax.tick_params(colors=text_color)
 
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+        add_hero_grid(ax, axis='y', theme=_hero_theme)
+        clean_hero_spines(ax, theme=_hero_theme)
+    else:
+        add_faint_grid(ax, axis='y', alpha=0.2)
+        clean_spine(ax)
+
+    # Add ideal reference line
+    ax.axhline(y=0.5, color='#666666', linestyle='--', alpha=0.4, linewidth=1.2, label='Ideal 50%')
+
+    if _hero_mode:
+        export_hero_fig(fig, str(output_path.with_suffix('')), theme=_hero_theme)
+    else:
+        export_fig(fig, str(output_path.with_suffix('')))
     plt.close()
-
-    print(f"Saved: {output_path}")
 
 
 def plot_visibility_comparison(
     results: List[dict],
     output_path: Path,
     group_by: str = 'backend_type',
-    title: str = 'Visibility Comparison'
+    title: str = 'Visibility Comparison',
+    _hero_mode: bool = False,
+    _hero_theme: str = 'light'
 ):
     """
     Create bar plot comparing visibility across backends/configurations.
@@ -244,8 +273,13 @@ def plot_visibility_comparison(
         Key to group results by.
     title : str
         Plot title.
+    _hero_mode : bool
+        Internal: whether generating hero figure
+    _hero_theme : str
+        Internal: 'light' or 'dark' theme for hero
     """
-    fig, ax = plt.subplots(figsize=(10, 6))
+    figsize = (14, 5) if _hero_mode else (6.5, 5)
+    fig, ax = plt.subplots(figsize=figsize)
 
     labels = []
     visibilities = []
@@ -260,32 +294,45 @@ def plot_visibility_comparison(
         errors.append(result.get('visibility_error', 0))
 
     x = np.arange(len(labels))
-    bars = ax.bar(x, visibilities, yerr=errors, capsize=5, alpha=0.8)
+    bars = ax.bar(x, visibilities, yerr=errors, capsize=4, alpha=0.75,
+                   color='#4A90E2', edgecolor='#2E5C8A', linewidth=0.8)
 
-    ax.set_xlabel('Configuration', fontsize=12)
-    ax.set_ylabel('Visibility (V)', fontsize=12)
-    ax.set_title(title, fontsize=14)
+    ax.set_xlabel('Configuration')
+    ax.set_ylabel('Visibility (V)')
+    ax.set_title(title)
     ax.set_xticks(x)
-    ax.set_xticklabels(labels, rotation=45, ha='right')
+    ax.set_xticklabels(labels, rotation=35, ha='right')
 
     # Add ideal reference line
-    ax.axhline(y=1.0, color='green', linestyle='--', alpha=0.5, label='Ideal V=1.0')
-    ax.legend()
+    ax.axhline(y=1.0, color='#28A745', linestyle='--', alpha=0.5, linewidth=1.5, label='Ideal V=1.0')
+    ax.legend(loc='lower left', framealpha=0.95)
 
-    ax.set_ylim(0, 1.2)
-    ax.grid(axis='y', alpha=0.3)
+    ax.set_ylim(0, 1.15)
 
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    if _hero_mode:
+        # Set text colors for hero theme
+        text_color = '#1A1A1A' if _hero_theme == 'light' else '#E8E8E8'
+        ax.title.set_color(text_color)
+        ax.xaxis.label.set_color(text_color)
+        ax.yaxis.label.set_color(text_color)
+        ax.tick_params(colors=text_color)
+
+        add_hero_grid(ax, axis='y', theme=_hero_theme)
+        clean_hero_spines(ax, theme=_hero_theme)
+        export_hero_fig(fig, str(output_path.with_suffix('')), theme=_hero_theme)
+    else:
+        add_faint_grid(ax, axis='y', alpha=0.2)
+        clean_spine(ax)
+        export_fig(fig, str(output_path.with_suffix('')))
     plt.close()
-
-    print(f"Saved: {output_path}")
 
 
 def plot_visibility_vs_opt_level(
     results: List[dict],
     output_path: Path,
-    title: str = 'Visibility vs Optimization Level'
+    title: str = 'Visibility vs Optimization Level',
+    _hero_mode: bool = False,
+    _hero_theme: str = 'light'
 ):
     """
     Plot visibility as a function of transpiler optimization level.
@@ -309,7 +356,8 @@ def plot_visibility_vs_opt_level(
         opt_data[opt]['depth'].append(result.get('transpiled_depth', 0))
         opt_data[opt]['error'].append(result.get('visibility_error', 0))
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    figsize = (18, 6) if _hero_mode else (12, 5)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
 
     opt_levels = sorted(opt_data.keys())
     V_means = [np.mean(opt_data[o]['V']) for o in opt_levels]
@@ -317,35 +365,44 @@ def plot_visibility_vs_opt_level(
     depths = [np.mean(opt_data[o]['depth']) for o in opt_levels]
 
     # Visibility vs opt level
-    ax1.errorbar(opt_levels, V_means, yerr=V_stds, marker='o', capsize=5, linewidth=2, markersize=8)
-    ax1.set_xlabel('Optimization Level', fontsize=12)
-    ax1.set_ylabel('Visibility (V)', fontsize=12)
-    ax1.set_title('Visibility vs Optimization Level', fontsize=14)
+    ax1.errorbar(opt_levels, V_means, yerr=V_stds, marker='o', capsize=4,
+                 linewidth=2, markersize=7, color='#E74C3C',
+                 markerfacecolor='#E74C3C', markeredgecolor='#C0392B', markeredgewidth=0.8)
+    ax1.set_xlabel('Optimization Level')
+    ax1.set_ylabel('Visibility (V)')
+    ax1.set_title('Visibility vs Optimization')  # Shorter, uses rcParams
     ax1.set_xticks(opt_levels)
-    ax1.axhline(y=1.0, color='green', linestyle='--', alpha=0.5, label='Ideal V=1.0')
-    ax1.legend()
-    ax1.grid(alpha=0.3)
-    ax1.set_ylim(0, 1.2)
+    ax1.axhline(y=1.0, color='#28A745', linestyle='--', alpha=0.5, linewidth=1.5, label='Ideal V=1.0')
+    ax1.legend(loc='lower left', framealpha=0.95)
+    add_faint_grid(ax1, axis='y', alpha=0.2)
+    clean_spine(ax1)
+    ax1.set_ylim(0, 1.15)
 
     # Depth vs opt level
-    ax2.bar(opt_levels, depths, alpha=0.8)
-    ax2.set_xlabel('Optimization Level', fontsize=12)
-    ax2.set_ylabel('Transpiled Circuit Depth', fontsize=12)
-    ax2.set_title('Circuit Depth vs Optimization Level', fontsize=14)
+    ax2.bar(opt_levels, depths, alpha=0.75, color='#9B59B6', edgecolor='#7D3C98', linewidth=0.8)
+    ax2.set_xlabel('Optimization Level')
+    ax2.set_ylabel('Transpiled Circuit Depth')
+    ax2.set_title('Circuit Depth vs Optimization')  # Shorter, uses rcParams
     ax2.set_xticks(opt_levels)
-    ax2.grid(axis='y', alpha=0.3)
+    add_faint_grid(ax2, axis='y', alpha=0.2)
+    clean_spine(ax2)
 
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    # Use tight_layout with reserved top space for potential suptitle
+    fig.tight_layout(rect=[0, 0, 1, 0.96])
+
+    if _hero_mode:
+        export_hero_fig(fig, str(output_path.with_suffix('')), theme=_hero_theme)
+    else:
+        export_fig(fig, str(output_path.with_suffix('')))
     plt.close()
-
-    print(f"Saved: {output_path}")
 
 
 def plot_collapse_forecast(
     sweep_data: dict,
     output_path: Path,
-    title: str = 'Collapse Model Forecast'
+    title: str = 'Collapse Model Forecast',
+    _hero_mode: bool = False,
+    _hero_theme: str = 'light'
 ):
     """
     Plot V(gamma) forecast curve from collapse model sweep.
@@ -363,33 +420,45 @@ def plot_collapse_forecast(
     V = sweep_data.get('visibility_values', [])
     V_err = sweep_data.get('visibility_errors', [])
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    figsize = (14, 5) if _hero_mode else (6.5, 5)
+    fig, ax = plt.subplots(figsize=figsize)
 
-    ax.errorbar(gamma, V, yerr=V_err, marker='o', capsize=3, linewidth=2, markersize=6)
-    ax.set_xlabel(r'Collapse Strength ($\gamma$)', fontsize=12)
-    ax.set_ylabel('Visibility (V)', fontsize=12)
-    ax.set_title(title, fontsize=14)
+    ax.errorbar(gamma, V, yerr=V_err, marker='o', capsize=4, linewidth=2,
+                markersize=6, color='#3498DB', markerfacecolor='#3498DB',
+                markeredgecolor='#2874A6', markeredgewidth=0.8)
+    ax.set_xlabel(r'Dephasing Strength ($\gamma$)')
+    ax.set_ylabel('Visibility (V)')
+    ax.set_title(title)
 
     # Reference lines
-    ax.axhline(y=1.0, color='green', linestyle='--', alpha=0.5, label='Ideal V=1.0')
-    ax.axhline(y=0.0, color='gray', linestyle=':', alpha=0.5, label='Complete dephasing')
+    ax.axhline(y=1.0, color='#28A745', linestyle='--', alpha=0.5, linewidth=1.5, label='Ideal V=1.0')
+    ax.axhline(y=0.0, color='#666666', linestyle=':', alpha=0.4, linewidth=1.2, label='Complete dephasing')
 
-    ax.legend()
-    ax.grid(alpha=0.3)
+    ax.legend(loc='upper right', framealpha=0.95)
+
+    if _hero_mode:
+        add_hero_grid(ax, axis='both', theme=_hero_theme)
+        clean_hero_spines(ax, theme=_hero_theme)
+    else:
+        add_faint_grid(ax, axis='both', alpha=0.15)
+        clean_spine(ax)
+
     ax.set_xlim(-0.05, 1.05)
-    ax.set_ylim(-0.1, 1.2)
+    ax.set_ylim(-0.05, 1.15)
 
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    if _hero_mode:
+        export_hero_fig(fig, str(output_path.with_suffix('')), theme=_hero_theme)
+    else:
+        export_fig(fig, str(output_path.with_suffix('')))
     plt.close()
-
-    print(f"Saved: {output_path}")
 
 
 def plot_coherence_forecast(
     sweep_data: dict,
     output_path: Path,
-    title: str = 'Coherence Witness Forecast'
+    title: str = 'Coherence Witness Forecast',
+    _hero_mode: bool = False,
+    _hero_theme: str = 'light'
 ):
     """
     Plot W_tilde(gamma) forecast curve from coherence sweep.
@@ -414,44 +483,58 @@ def plot_coherence_forecast(
     W_tilde = sweep_data.get(f'W_{basis}_tilde_values', [])
     W_tilde_err = sweep_data.get(f'W_{basis}_tilde_errors', [])
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+    figsize = (18, 6) if _hero_mode else (13, 5)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=figsize)
 
     # Raw W values
-    ax1.errorbar(gamma, W, yerr=W_err, marker='o', capsize=3, linewidth=2, markersize=6, color='blue')
-    ax1.set_xlabel(r'Collapse Strength ($\gamma$)', fontsize=12)
-    ax1.set_ylabel(f'$W_{{{basis}}}$ (raw coherence witness)', fontsize=12)
-    ax1.set_title(f'Raw Coherence Witness ({basis} basis)', fontsize=14)
-    ax1.axhline(y=1.0, color='green', linestyle='--', alpha=0.5, label='Ideal coherent')
-    ax1.axhline(y=0.0, color='red', linestyle=':', alpha=0.5, label='Fully decohered')
-    ax1.legend()
-    ax1.grid(alpha=0.3)
+    ax1.errorbar(gamma, W, yerr=W_err, marker='o', capsize=4, linewidth=2,
+                 markersize=6, color='#3498DB', markerfacecolor='#3498DB',
+                 markeredgecolor='#2874A6', markeredgewidth=0.8)
+    ax1.set_xlabel(r'Dephasing Strength ($\gamma$)')
+    ax1.set_ylabel(f'$W_{{{basis}}}$ (raw witness)')
+    ax1.set_title('Raw Coherence')  # Uses rcParams titlesize=12, weight=normal
+    ax1.axhline(y=1.0, color='#28A745', linestyle='--', alpha=0.5, linewidth=1.5, label='Ideal coherent')
+    ax1.axhline(y=0.0, color='#E74C3C', linestyle=':', alpha=0.4, linewidth=1.2, label='Fully decohered')
+    ax1.legend(loc='upper right', framealpha=0.95)
+    add_faint_grid(ax1, axis='both', alpha=0.15)
+    clean_spine(ax1)
     ax1.set_xlim(-0.05, 1.05)
-    ax1.set_ylim(-0.2, 1.2)
+    ax1.set_ylim(-0.15, 1.15)
 
     # Normalized W_tilde values
-    ax2.errorbar(gamma, W_tilde, yerr=W_tilde_err, marker='s', capsize=3, linewidth=2, markersize=6, color='purple')
-    ax2.set_xlabel(r'Collapse Strength ($\gamma$)', fontsize=12)
-    ax2.set_ylabel(r'$\tilde{W}_X = W_X / W_X^{\mathrm{ideal}}$', fontsize=12)
-    ax2.set_title(f'Normalized Coherence ({basis} basis)', fontsize=14)
-    ax2.axhline(y=1.0, color='green', linestyle='--', alpha=0.5, label='Ideal (no collapse)')
-    ax2.axhline(y=0.0, color='red', linestyle=':', alpha=0.5, label='Complete decoherence')
-    ax2.legend()
-    ax2.grid(alpha=0.3)
+    ax2.errorbar(gamma, W_tilde, yerr=W_tilde_err, marker='s', capsize=4,
+                 linewidth=2, markersize=6, color='#9B59B6',
+                 markerfacecolor='#9B59B6', markeredgecolor='#7D3C98', markeredgewidth=0.8)
+    ax2.set_xlabel(r'Dephasing Strength ($\gamma$)')
+    ax2.set_ylabel(r'$\tilde{W}_X = W_X / W_X^{\mathrm{ideal}}$')
+    ax2.set_title('Normalized Coherence')  # Uses rcParams titlesize=12, weight=normal
+    ax2.axhline(y=1.0, color='#28A745', linestyle='--', alpha=0.5, linewidth=1.5, label='Ideal (no collapse)')
+    ax2.axhline(y=0.0, color='#E74C3C', linestyle=':', alpha=0.4, linewidth=1.2, label='Complete decoherence')
+    ax2.legend(loc='upper right', framealpha=0.95)
+    add_faint_grid(ax2, axis='both', alpha=0.15)
+    clean_spine(ax2)
     ax2.set_xlim(-0.05, 1.05)
-    ax2.set_ylim(-0.2, 1.2)
+    ax2.set_ylim(-0.15, 1.15)
 
-    plt.suptitle(title, fontsize=16, y=1.02)
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    # Figure-level title: larger (16pt), semibold, positioned high
+    fig.suptitle(title, fontsize=16, fontweight='semibold', y=0.98)
+
+    # Reserve top space to prevent suptitle/axes-title collision
+    fig.subplots_adjust(top=0.88, wspace=0.25)
+
+    if _hero_mode:
+        export_hero_fig(fig, str(output_path.with_suffix('')), theme=_hero_theme)
+    else:
+        export_fig(fig, str(output_path.with_suffix('')))
     plt.close()
-
-    print(f"Saved: {output_path}")
 
 
 def plot_coherence_comparison(
     results: List[dict],
     output_path: Path,
-    title: str = 'Coherence Witness Comparison'
+    title: str = 'Coherence Witness Comparison',
+    _hero_mode: bool = False,
+    _hero_theme: str = 'light'
 ):
     """
     Plot coherence witness comparison across configurations.
@@ -465,46 +548,102 @@ def plot_coherence_comparison(
     title : str
         Plot title.
     """
-    fig, ax = plt.subplots(figsize=(10, 6))
+    figsize = (14, 5) if _hero_mode else (6.5, 5)
+    fig, ax = plt.subplots(figsize=figsize)
 
     labels = []
     W_X_values = []
     W_X_errors = []
-    W_X_tilde_values = []
+    W_Y_values = []
+    W_Y_errors = []
+    C_mag_values = []
+    C_mag_errors = []
 
     for result in results:
-        label = f"{result.get('backend_type', 'unknown')}"
-        if 'optimization_level' in result:
-            label += f" (opt={result['optimization_level']})"
+        backend_type = result.get('backend_type', 'unknown')
+        # Use cleaner labels
+        if backend_type == 'ideal':
+            label = 'Ideal'
+        elif backend_type == 'noisy_simulator':
+            label = 'Noisy Sim'
+        elif backend_type == 'hardware':
+            label = 'Hardware'
+        else:
+            label = backend_type
+
         labels.append(label)
         W_X_values.append(result.get('W_X', 0))
         W_X_errors.append(result.get('W_X_error', 0))
-        W_X_tilde_values.append(result.get('W_X_tilde', 0))
+        W_Y_values.append(result.get('W_Y', 0))
+        W_Y_errors.append(result.get('W_Y_error', 0))
+
+        # Compute C_mag = sqrt(W_X^2 + W_Y^2)
+        W_X = result.get('W_X', 0)
+        W_Y = result.get('W_Y', 0)
+        C_mag = np.sqrt(W_X**2 + W_Y**2)
+        C_mag_values.append(C_mag)
+
+        # Error propagation for C_mag
+        W_X_err = result.get('W_X_error', 0)
+        W_Y_err = result.get('W_Y_error', 0)
+        if C_mag > 0:
+            C_mag_err = np.sqrt((W_X * W_X_err)**2 + (W_Y * W_Y_err)**2) / C_mag
+        else:
+            C_mag_err = 0
+        C_mag_errors.append(C_mag_err)
 
     x = np.arange(len(labels))
-    width = 0.35
+    width = 0.25
 
-    bars1 = ax.bar(x - width/2, W_X_values, width, yerr=W_X_errors,
-                   capsize=5, alpha=0.8, label='$W_X$ (raw)')
-    bars2 = ax.bar(x + width/2, W_X_tilde_values, width,
-                   alpha=0.8, label=r'$\tilde{W}_X$ (normalized)')
+    # Plot three bars: W_X, W_Y, C_mag
+    bars1 = ax.bar(x - width, W_X_values, width, yerr=W_X_errors,
+                   capsize=4, alpha=0.8, label='$W_X$',
+                   color='#3498DB', edgecolor='#2874A6', linewidth=0.8)
+    bars2 = ax.bar(x, W_Y_values, width, yerr=W_Y_errors,
+                   capsize=4, alpha=0.8, label='$W_Y$',
+                   color='#E74C3C', edgecolor='#C0392B', linewidth=0.8)
+    bars3 = ax.bar(x + width, C_mag_values, width, yerr=C_mag_errors,
+                   capsize=4, alpha=0.8, label='$C_\\mathrm{mag}$',
+                   color='#9B59B6', edgecolor='#7D3C98', linewidth=0.8)
 
-    ax.set_xlabel('Configuration', fontsize=12)
-    ax.set_ylabel('Coherence Witness', fontsize=12)
-    ax.set_title(title, fontsize=14)
+    ax.set_xlabel('Configuration')
+    ax.set_ylabel('Coherence Witness')
+    ax.set_title(title)
     ax.set_xticks(x)
-    ax.set_xticklabels(labels, rotation=45, ha='right')
+    ax.set_xticklabels(labels)
 
-    ax.axhline(y=1.0, color='green', linestyle='--', alpha=0.5, label='Ideal')
-    ax.legend(loc='upper right')
-    ax.set_ylim(-0.2, 1.4)
-    ax.grid(axis='y', alpha=0.3)
+    # Reference lines
+    ax.axhline(y=1.0, color='#28A745', linestyle='--', alpha=0.4, linewidth=1.2, label='Ideal $W_X$=1')
+    ax.axhline(y=np.sqrt(2), color='#F39C12', linestyle=':', alpha=0.4, linewidth=1.2,
+               label=r'Ideal $C_\mathrm{mag}$=$\sqrt{2}$')
 
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    ax.legend(loc='upper right', framealpha=0.95, fontsize=10)
+    ax.set_ylim(-1.1, 1.6)
+
+    if _hero_mode:
+        # Set text colors for hero theme
+        text_color = '#1A1A1A' if _hero_theme == 'light' else '#E8E8E8'
+        ax.title.set_color(text_color)
+        ax.xaxis.label.set_color(text_color)
+        ax.yaxis.label.set_color(text_color)
+        ax.tick_params(colors=text_color)
+
+        # Apply vignette effect
+        add_subtle_vignette(ax, theme=_hero_theme)
+
+        # Apply rounded corners to bars
+        apply_bar_gradient(bars1, theme=_hero_theme, rounded_corners=True)
+        apply_bar_gradient(bars2, theme=_hero_theme, rounded_corners=True)
+        apply_bar_gradient(bars3, theme=_hero_theme, rounded_corners=True)
+
+        add_hero_grid(ax, axis='y', theme=_hero_theme)
+        clean_hero_spines(ax, theme=_hero_theme)
+        export_hero_fig(fig, str(output_path.with_suffix('')), theme=_hero_theme)
+    else:
+        add_faint_grid(ax, axis='y', alpha=0.2)
+        clean_spine(ax)
+        export_fig(fig, str(output_path.with_suffix('')))
     plt.close()
-
-    print(f"Saved: {output_path}")
 
 
 def plot_v_vs_coherence(
@@ -526,7 +665,7 @@ def plot_v_vs_coherence(
     title : str
         Plot title.
     """
-    fig, ax = plt.subplots(figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(6, 6))
 
     # Filter for results that have both V and W_X
     filtered = [r for r in results if 'visibility' in r and 'W_X' in r]
@@ -541,35 +680,34 @@ def plot_v_vs_coherence(
     # Color by gamma if available
     if all('collapse_gamma' in r for r in filtered):
         gamma_values = [r['collapse_gamma'] for r in filtered]
-        scatter = ax.scatter(V_values, W_X_values, c=gamma_values, cmap='viridis',
-                            s=80, alpha=0.8, edgecolors='black')
+        scatter = ax.scatter(V_values, W_X_values, c=gamma_values, cmap='plasma',
+                            s=90, alpha=0.85, edgecolors='#333333', linewidths=0.8)
         cbar = plt.colorbar(scatter, ax=ax)
-        cbar.set_label(r'Collapse strength $\gamma$', fontsize=12)
+        cbar.set_label(r'Dephasing strength $\gamma$')
     else:
-        ax.scatter(V_values, W_X_values, s=80, alpha=0.8, edgecolors='black')
+        ax.scatter(V_values, W_X_values, s=90, alpha=0.85, color='#3498DB',
+                   edgecolors='#2874A6', linewidths=0.8)
 
-    ax.set_xlabel('Visibility (V)', fontsize=12)
-    ax.set_ylabel('$W_X$ (Coherence Witness)', fontsize=12)
-    ax.set_title(title, fontsize=14)
+    ax.set_xlabel('Visibility (V)')
+    ax.set_ylabel('$W_X$ (Coherence Witness)')
+    ax.set_title(title)
 
     # Add diagonal reference
-    ax.plot([0, 1], [0, 1], 'k--', alpha=0.3, label='V = W_X')
+    ax.plot([0, 1], [0, 1], 'k--', alpha=0.25, linewidth=1.2, label='V = W_X')
 
     # Add reference lines
-    ax.axhline(y=1.0, color='green', linestyle=':', alpha=0.3)
-    ax.axvline(x=1.0, color='green', linestyle=':', alpha=0.3)
+    ax.axhline(y=1.0, color='#28A745', linestyle=':', alpha=0.3, linewidth=1.2)
+    ax.axvline(x=1.0, color='#28A745', linestyle=':', alpha=0.3, linewidth=1.2)
 
-    ax.set_xlim(-0.1, 1.2)
-    ax.set_ylim(-0.1, 1.2)
+    ax.set_xlim(-0.05, 1.15)
+    ax.set_ylim(-0.05, 1.15)
     ax.set_aspect('equal')
-    ax.grid(alpha=0.3)
-    ax.legend()
+    add_faint_grid(ax, axis='both', alpha=0.15)
+    clean_spine(ax)
+    ax.legend(loc='lower right', framealpha=0.95)
 
-    plt.tight_layout()
-    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    export_fig(fig, str(output_path.with_suffix('')))
     plt.close()
-
-    print(f"Saved: {output_path}")
 
 
 def compute_coherence_summary(results: List[dict]) -> Dict[str, Any]:
@@ -697,6 +835,48 @@ def generate_analysis_report(
     return analysis
 
 
+def export_hero_if_enabled(plot_func, plot_args, hero_dir: Optional[Path] = None, hero_themes: list = []):
+    """
+    Call plotting function, then optionally generate hero versions.
+
+    Parameters
+    ----------
+    plot_func : callable
+        The plotting function
+    plot_args : dict
+        Arguments for the plotting function
+    hero_dir : Path, optional
+        Directory for hero figures
+    hero_themes : list
+        Themes to export: ['light'], ['dark'], or ['light', 'dark']
+    """
+    # Always generate paper figure first (unchanged)
+    plot_func(**plot_args)
+
+    # Generate hero figures if enabled
+    if not hero_dir or not hero_themes:
+        return
+
+    paper_path = plot_args['output_path']
+    base_name = paper_path.stem
+
+    for theme in hero_themes:
+        # Switch to hero styling
+        set_hero_style(theme=theme)
+
+        # Prepare hero arguments
+        hero_args = plot_args.copy()
+        hero_args['output_path'] = hero_dir / base_name
+        hero_args['_hero_mode'] = True
+        hero_args['_hero_theme'] = theme
+
+        # Generate hero figure
+        plot_func(**hero_args)
+
+    # Restore paper style for any subsequent plots
+    set_paper_style()
+
+
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
@@ -718,6 +898,18 @@ def parse_args():
         '--summary', action='store_true',
         help='Generate summary analysis'
     )
+    parser.add_argument(
+        '--export-hero', action='store_true',
+        help='Export hero banner figures to figures_hero/ (in addition to paper figures)'
+    )
+    parser.add_argument(
+        '--hero-theme', type=str, default='both', choices=['light', 'dark', 'both'],
+        help='Hero theme: light, dark, or both (default: both)'
+    )
+    parser.add_argument(
+        '--hero-dir', type=str, default=None,
+        help='Directory for hero figures (default: <figures-dir>/../figures_hero)'
+    )
     return parser.parse_args()
 
 
@@ -728,11 +920,31 @@ def main():
     figures_dir = Path(args.figures_dir)
     figures_dir.mkdir(parents=True, exist_ok=True)
 
+    # Setup hero export if enabled
+    hero_dir = None
+    hero_themes = []
+    if args.export_hero:
+        if args.hero_dir:
+            hero_dir = Path(args.hero_dir)
+        else:
+            hero_dir = figures_dir.parent / 'figures_hero'
+        hero_dir.mkdir(parents=True, exist_ok=True)
+
+        if args.hero_theme == 'both':
+            hero_themes = ['light', 'dark']
+        else:
+            hero_themes = [args.hero_theme]
+
+    # Apply paper-quality styling globally
+    set_paper_style()
+
     print("=" * 70)
     print("Branch-Transfer Experiment: Analysis")
     print("=" * 70)
     print(f"  artifacts_dir = {artifacts_dir}")
     print(f"  figures_dir = {figures_dir}")
+    if hero_dir:
+        print(f"  hero_dir = {hero_dir} (themes: {', '.join(hero_themes)})")
     print()
 
     # Load results
@@ -758,28 +970,43 @@ def main():
         # PR distribution comparison
         if ideal_results or noisy_results:
             combined = ideal_results + noisy_results
-            plot_pr_distribution(
-                combined[:4],  # Limit to avoid crowding
-                figures_dir / 'pr_distribution.png',
-                title='PR Distribution: Ideal vs Noisy Simulator'
+            export_hero_if_enabled(
+                plot_pr_distribution,
+                {
+                    'results': combined[:4],
+                    'output_path': figures_dir / 'pr_distribution.png',
+                    'title': 'PR Distribution: Ideal vs Noisy Simulator'
+                },
+                hero_dir=hero_dir,
+                hero_themes=hero_themes
             )
 
         # Visibility comparison
         if ideal_results or noisy_results or hardware_results:
             all_results = ideal_results[:1] + noisy_results[:3] + hardware_results[:2]
             if all_results:
-                plot_visibility_comparison(
-                    all_results,
-                    figures_dir / 'visibility_comparison.png',
-                    title='Visibility Across Configurations'
+                export_hero_if_enabled(
+                    plot_visibility_comparison,
+                    {
+                        'results': all_results,
+                        'output_path': figures_dir / 'visibility_comparison.png',
+                        'title': 'Visibility Across Configurations'
+                    },
+                    hero_dir=hero_dir,
+                    hero_themes=hero_themes
                 )
 
         # Opt level analysis (noisy)
         if len(noisy_results) > 1:
-            plot_visibility_vs_opt_level(
-                noisy_results,
-                figures_dir / 'visibility_vs_opt_level.png',
-                title='Visibility vs Transpiler Optimization (Noisy Sim)'
+            export_hero_if_enabled(
+                plot_visibility_vs_opt_level,
+                {
+                    'results': noisy_results,
+                    'output_path': figures_dir / 'visibility_vs_opt_level.png',
+                    'title': 'Visibility vs Transpiler Optimization (Noisy Sim)'
+                },
+                hero_dir=hero_dir,
+                hero_themes=hero_themes
             )
 
         # Load and plot collapse sweep if available (visibility-based)
@@ -789,10 +1016,15 @@ def main():
                 sweep_data = json.load(f)
             model = sweep_data.get('collapse_model', 'unknown')
             noise = 'noisy' if sweep_data.get('add_hardware_noise') else 'ideal'
-            plot_collapse_forecast(
-                sweep_data,
-                figures_dir / f'collapse_forecast_{model}_{noise}.png',
-                title=f'V(γ) Forecast: {model} model ({noise} baseline)'
+            export_hero_if_enabled(
+                plot_collapse_forecast,
+                {
+                    'sweep_data': sweep_data,
+                    'output_path': figures_dir / f'collapse_forecast_{model}_{noise}.png',
+                    'title': f'V(γ) Forecast: {model} model ({noise} baseline)'
+                },
+                hero_dir=hero_dir,
+                hero_themes=hero_themes
             )
 
         # Load and plot coherence sweep if available (coherence witness-based)
@@ -803,19 +1035,29 @@ def main():
             model = sweep_data.get('collapse_model', 'unknown')
             noise = 'noisy' if sweep_data.get('add_hardware_noise') else 'ideal'
             basis = sweep_data.get('measurement_basis', 'X')
-            plot_coherence_forecast(
-                sweep_data,
-                figures_dir / f'coherence_forecast_{model}_{noise}_{basis}.png',
-                title=f'$W_{{{basis}}}(\gamma)$ Forecast: {model} ({noise} baseline)'
+            export_hero_if_enabled(
+                plot_coherence_forecast,
+                {
+                    'sweep_data': sweep_data,
+                    'output_path': figures_dir / f'coherence_forecast_{model}_{noise}_{basis}.png',
+                    'title': fr'$W_{{{basis}}}(\gamma)$ Forecast: {model} ({noise} baseline)'
+                },
+                hero_dir=hero_dir,
+                hero_themes=hero_themes
             )
 
         # Plot coherence comparison if coherence results available
         coherence_results = [r for r in results if 'W_X' in r]
         if coherence_results:
-            plot_coherence_comparison(
-                coherence_results[:6],  # Limit to avoid crowding
-                figures_dir / 'coherence_comparison.png',
-                title='Coherence Witness Across Configurations'
+            export_hero_if_enabled(
+                plot_coherence_comparison,
+                {
+                    'results': coherence_results[:6],
+                    'output_path': figures_dir / 'coherence_comparison.png',
+                    'title': 'Coherence Witness Across Configurations'
+                },
+                hero_dir=hero_dir,
+                hero_themes=hero_themes
             )
 
     # Generate summary
