@@ -372,7 +372,7 @@ Measures similarity between two kernel matrices:
 
 <p><em><strong>Figure:</strong> 5-qubit branch-transfer primitive executed on IBM hardware (ibm_fez). Shaded bands mark protocol stages (prep→corr→rec→msg→copy→erase→swap); final measurements feed visibility and coherence-witness diagnostics.</em></p>
 
-Motivated by Violaris' proposal of an inter-branch communication protocol in a Wigner's-friend-style setting (arXiv:2601.08102), this repository provides a hardware-executed implementation with coherence-witness diagnostics. The 5-qubit branch-transfer protocol was executed on IBM Quantum hardware (ibm_fez) and analyzed using coherence witness measurements.
+Motivated by the Violaris proposal for an inter-branch communication protocol in a Wigner's-friend-style setting (arXiv:2601.08102), this repository provides a hardware-executed implementation with coherence-witness diagnostics. The 5-qubit branch-transfer protocol was executed on superconducting quantum hardware (ibm_fez) and analyzed using coherence witness measurements.
 
 ### What Was Implemented
 
