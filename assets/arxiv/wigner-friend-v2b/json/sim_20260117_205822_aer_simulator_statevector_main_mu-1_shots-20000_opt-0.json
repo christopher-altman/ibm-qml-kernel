@@ -1,0 +1,47 @@
+{
+  "backend": "aer_simulator_statevector",
+  "backend_type": "ideal",
+  "mode": "main",
+  "mu": 1,
+  "shots": 20000,
+  "counts": {
+    "01": 10094,
+    "10": 9906
+  },
+  "probabilities": {
+    "01": 0.5047,
+    "10": 0.4953
+  },
+  "visibility": 1.0,
+  "visibility_error": 0.0,
+  "conditional_probabilities": {
+    "P(P=1|R=0)": 1.0,
+    "P(P=1|R=1)": 0.0,
+    "n_R0": 9906,
+    "n_R1": 10094
+  },
+  "expected_distribution": {
+    "01": 0.5,
+    "10": 0.5
+  },
+  "circuit_stats": {
+    "num_qubits": 5,
+    "num_clbits": 2,
+    "depth": 8,
+    "size": 11,
+    "gate_counts": {
+      "h": 1,
+      "cx": 5,
+      "x": 3
+    },
+    "two_qubit_gate_count": 5
+  },
+  "transpiled_depth": 8,
+  "transpiled_size": 11,
+  "optimization_level": 0,
+  "timestamp": "20260117_205822",
+  "qiskit_version": {
+    "qiskit": "2.3.0",
+    "qiskit_aer": "0.17.2"
+  }
+}

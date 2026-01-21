@@ -1,0 +1,18 @@
+{
+  "backend_name": "ibm_fez",
+  "timestamp": "20260117_205833",
+  "num_qubits": 156,
+  "version": "2",
+  "basis_gates": [
+    "cz",
+    "id",
+    "rz",
+    "if_else",
+    "x",
+    "sx",
+    "delay",
+    "reset",
+    "measure"
+  ],
+  "properties_timestamp": "2026-01-17 19:50:28+08:00"
+}

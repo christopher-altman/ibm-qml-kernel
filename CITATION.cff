@@ -1,50 +1,32 @@
-cff-version: 0.1.0
-message: "If you use this software, please cite it as below."
-title: "Quantum kernel methods on IBM Quantum hardware with 2026-calibrated noise models"
+cff-version: 1.2.0
+message: "If you use this software or the accompanying reproducibility bundle, please cite it as below."
+title: "Wigner's Friend as a Circuit — Inter-Branch Communication Witness Benchmarks (Reproducibility Bundle)"
+type: software
 authors:
   - family-names: Altman
     given-names: Christopher
-version: "0.1.0"
-date-released: 2026-01-15
+    email: x@christopheraltman.com
+    website: "https://lab.christopheraltman.com"
+repository-code: "https://github.com/christopher-altman/ibm-qml-kernel"
 url: "https://github.com/christopher-altman/ibm-qml-kernel"
 license: MIT
 keywords:
-  - quantum machine learning
-  - quantum hardware
-  - superconducting qubits
-  - quantum neural networks
-  - adaptive quantum networks
-  - kernel methods
-  - noise modeling
-  - hardware integration
-
-references:
-   - type: article
-    title: "Superpositional Quantum Network Topologies"
-    authors:
-      - family-names: Altman
-        given-names: Christopher
-      - family-names: Pykacz
-        given-names: Jarosław
-      - family-names: Zapatrin
-        given-names: Roman
-    journal: "International Journal of Theoretical Physics"
-    volume: 43
-    pages: "2029–2041"
-    year: 2004
-    doi: "10.1023/B:IJTP.0000049008.51567.ec"
-    url: "https://ui.adsabs.harvard.edu/abs/2004IJTP...43.2029A/abstract"
-
-  - type: article
-    title: "Backpropagation in Adaptive Quantum Networks"
-    authors:
-      - family-names: Altman
-        given-names: Christopher
-      - family-names: Zapatrin
-        given-names: Roman
-    journal: "International Journal of Theoretical Physics"
-    volume: 49
-    pages: "2991–2997"
-    year: 2010
-    doi: "10.1007/s10773-009-0103-1"
-    url: "https://arxiv.org/abs/0903.4416"
+  - quantum computing
+  - quantum foundations
+  - Wigner's friend
+  - IBM Quantum
+  - reproducibility
+  - Qiskit
+  - noise models
+  - inter-branch communication
+version: "wigner-friend-v2b"
+date-released: "2026-01-21"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Altman
+      given-names: Christopher
+  title: "Wigner's Friend as a Circuit: Inter-Branch Communication Witness Benchmarks on Superconducting Quantum Hardware"
+  year: 2026
+  repository-code: "https://github.com/christopher-altman/ibm-qml-kernel"
+  notes: "arXiv preprint; reproducibility release tag: wigner-friend-v2b"

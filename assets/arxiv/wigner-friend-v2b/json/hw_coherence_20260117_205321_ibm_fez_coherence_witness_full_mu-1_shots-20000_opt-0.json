@@ -1,0 +1,154 @@
+{
+  "backend": "ibm_fez",
+  "backend_type": "hardware",
+  "mode": "coherence_witness_full",
+  "mu": 1,
+  "shots": 20000,
+  "W_X": 0.8398000000000001,
+  "W_X_error": 0.003838853735166267,
+  "W_X_ideal": 1.0,
+  "W_X_tilde": 0.8398000000000001,
+  "W_X_tilde_error": 0.003838853735166267,
+  "x_basis_result": {
+    "backend": "ibm_fez",
+    "backend_type": "hardware",
+    "backend_config": {
+      "backend_name": "ibm_fez",
+      "num_qubits": 156,
+      "processor_type": "Heron"
+    },
+    "job_id": "d5lobdt9j2ac739k1a0g",
+    "mode": "coherence_witness",
+    "measurement_basis": "X",
+    "mu": 1,
+    "shots": 20000,
+    "actual_shots": 20000,
+    "counts": {
+      "1100": 2281,
+      "0011": 2225,
+      "1010": 2309,
+      "0110": 2325,
+      "0100": 240,
+      "0101": 2388,
+      "1001": 2233,
+      "1111": 2140,
+      "0000": 2497,
+      "1110": 126,
+      "1011": 188,
+      "0010": 245,
+      "0001": 270,
+      "1101": 150,
+      "1000": 237,
+      "0111": 146
+    },
+    "W_X": 0.8398000000000001,
+    "W_X_error": 0.003838853735166267,
+    "W_X_ideal": 1.0,
+    "W_X_tilde": 0.8398000000000001,
+    "W_X_tilde_error": 0.003838853735166267,
+    "parity_counts": {
+      "n_even": 18398,
+      "n_odd": 1602,
+      "p_even": 0.9199,
+      "p_odd": 0.0801
+    },
+    "circuit_stats": {
+      "num_qubits": 5,
+      "num_clbits": 4,
+      "depth": 8,
+      "size": 17,
+      "gate_counts": {
+        "h": 5,
+        "cx": 5,
+        "x": 3
+      },
+      "two_qubit_gate_count": 5
+    },
+    "transpiled_depth": 17,
+    "transpiled_size": 40,
+    "transpiled_two_qubit_gates": 5,
+    "optimization_level": 2,
+    "physical_layout": {
+      "initial_layout": "Layout({\n16: <Qubit register=(5, \"q\"), index=0>,\n24: <Qubit register=(5, \"q\"), index=1>,\n23: <Qubit register=(5, \"q\"), index=2>,\n22: <Qubit register=(5, \"q\"), index=3>,\n21: <Qubit register=(5, \"q\"), index=4>,\n0: <Qubit register=(151, \"ancilla\"), index=0>,\n1: <Qubit register=(151, \"ancilla\"), index=1>,\n2: <Qubit register=(151, \"ancilla\"), index=2>,\n3: <Qubit register=(151, \"ancilla\"), index=3>,\n4: <Qubit register=(151, \"ancilla\"), index=4>,\n5: <Qubit register=(151, \"ancilla\"), index=5>,\n6: <Qubit register=(151, \"ancilla\"), index=6>,\n7: <Qubit register=(151, \"ancilla\"), index=7>,\n8: <Qubit register=(151, \"ancilla\"), index=8>,\n9: <Qubit register=(151, \"ancilla\"), index=9>,\n10: <Qubit register=(151, \"ancilla\"), index=10>,\n11: <Qubit register=(151, \"ancilla\"), index=11>,\n12: <Qubit register=(151, \"ancilla\"), index=12>,\n13: <Qubit register=(151, \"ancilla\"), index=13>,\n14: <Qubit register=(151, \"ancilla\"), index=14>,\n15: <Qubit register=(151, \"ancilla\"), index=15>,\n17: <Qubit register=(151, \"ancilla\"), index=16>,\n18: <Qubit register=(151, \"ancilla\"), index=17>,\n19: <Qubit register=(151, \"ancilla\"), index=18>,\n20: <Qubit register=(151, \"ancilla\"), index=19>,\n25: <Qubit register=(151, \"ancilla\"), index=20>,\n26: <Qubit register=(151, \"ancilla\"), index=21>,\n27: <Qubit register=(151, \"ancilla\"), index=22>,\n28: <Qubit register=(151, \"ancilla\"), index=23>,\n29: <Qubit register=(151, \"ancilla\"), index=24>,\n30: <Qubit register=(151, \"ancilla\"), index=25>,\n31: <Qubit register=(151, \"ancilla\"), index=26>,\n32: <Qubit register=(151, \"ancilla\"), index=27>,\n33: <Qubit register=(151, \"ancilla\"), index=28>,\n34: <Qubit register=(151, \"ancilla\"), index=29>,\n35: <Qubit register=(151, \"ancilla\"), index=30>,\n36: <Qubit register=(151, \"ancilla\"), index=31>,\n37: <Qubit register=(151, \"ancilla\"), index=32>,\n38: <Qubit register=(151, \"ancilla\"), index=33>,\n39: <Qubit register=(151, \"ancilla\"), index=34>,\n40: <Qubit register=(151, \"ancilla\"), index=35>,\n41: <Qubit register=(151, \"ancilla\"), index=36>,\n42: <Qubit register=(151, \"ancilla\"), index=37>,\n43: <Qubit register=(151, \"ancilla\"), index=38>,\n44: <Qubit register=(151, \"ancilla\"), index=39>,\n45: <Qubit register=(151, \"ancilla\"), index=40>,\n46: <Qubit register=(151, \"ancilla\"), index=41>,\n47: <Qubit register=(151, \"ancilla\"), index=42>,\n48: <Qubit register=(151, \"ancilla\"), index=43>,\n49: <Qubit register=(151, \"ancilla\"), index=44>,\n50: <Qubit register=(151, \"ancilla\"), index=45>,\n51: <Qubit register=(151, \"ancilla\"), index=46>,\n52: <Qubit register=(151, \"ancilla\"), index=47>,\n53: <Qubit register=(151, \"ancilla\"), index=48>,\n54: <Qubit register=(151, \"ancilla\"), index=49>,\n55: <Qubit register=(151, \"ancilla\"), index=50>,\n56: <Qubit register=(151, \"ancilla\"), index=51>,\n57: <Qubit register=(151, \"ancilla\"), index=52>,\n58: <Qubit register=(151, \"ancilla\"), index=53>,\n59: <Qubit register=(151, \"ancilla\"), index=54>,\n60: <Qubit register=(151, \"ancilla\"), index=55>,\n61: <Qubit register=(151, \"ancilla\"), index=56>,\n62: <Qubit register=(151, \"ancilla\"), index=57>,\n63: <Qubit register=(151, \"ancilla\"), index=58>,\n64: <Qubit register=(151, \"ancilla\"), index=59>,\n65: <Qubit register=(151, \"ancilla\"), index=60>,\n66: <Qubit register=(151, \"ancilla\"), index=61>,\n67: <Qubit register=(151, \"ancilla\"), index=62>,\n68: <Qubit register=(151, \"ancilla\"), index=63>,\n69: <Qubit register=(151, \"ancilla\"), index=64>,\n70: <Qubit register=(151, \"ancilla\"), index=65>,\n71: <Qubit register=(151, \"ancilla\"), index=66>,\n72: <Qubit register=(151, \"ancilla\"), index=67>,\n73: <Qubit register=(151, \"ancilla\"), index=68>,\n74: <Qubit register=(151, \"ancilla\"), index=69>,\n75: <Qubit register=(151, \"ancilla\"), index=70>,\n76: <Qubit register=(151, \"ancilla\"), index=71>,\n77: <Qubit register=(151, \"ancilla\"), index=72>,\n78: <Qubit register=(151, \"ancilla\"), index=73>,\n79: <Qubit register=(151, \"ancilla\"), index=74>,\n80: <Qubit register=(151, \"ancilla\"), index=75>,\n81: <Qubit register=(151, \"ancilla\"), index=76>,\n82: <Qubit register=(151, \"ancilla\"), index=77>,\n83: <Qubit register=(151, \"ancilla\"), index=78>,\n84: <Qubit register=(151, \"ancilla\"), index=79>,\n85: <Qubit register=(151, \"ancilla\"), index=80>,\n86: <Qubit register=(151, \"ancilla\"), index=81>,\n87: <Qubit register=(151, \"ancilla\"), index=82>,\n88: <Qubit register=(151, \"ancilla\"), index=83>,\n89: <Qubit register=(151, \"ancilla\"), index=84>,\n90: <Qubit register=(151, \"ancilla\"), index=85>,\n91: <Qubit register=(151, \"ancilla\"), index=86>,\n92: <Qubit register=(151, \"ancilla\"), index=87>,\n93: <Qubit register=(151, \"ancilla\"), index=88>,\n94: <Qubit register=(151, \"ancilla\"), index=89>,\n95: <Qubit register=(151, \"ancilla\"), index=90>,\n96: <Qubit register=(151, \"ancilla\"), index=91>,\n97: <Qubit register=(151, \"ancilla\"), index=92>,\n98: <Qubit register=(151, \"ancilla\"), index=93>,\n99: <Qubit register=(151, \"ancilla\"), index=94>,\n100: <Qubit register=(151, \"ancilla\"), index=95>,\n101: <Qubit register=(151, \"ancilla\"), index=96>,\n102: <Qubit register=(151, \"ancilla\"), index=97>,\n103: <Qubit register=(151, \"ancilla\"), index=98>,\n104: <Qubit register=(151, \"ancilla\"), index=99>,\n105: <Qubit register=(151, \"ancilla\"), index=100>,\n106: <Qubit register=(151, \"ancilla\"), index=101>,\n107: <Qubit register=(151, \"ancilla\"), index=102>,\n108: <Qubit register=(151, \"ancilla\"), index=103>,\n109: <Qubit register=(151, \"ancilla\"), index=104>,\n110: <Qubit register=(151, \"ancilla\"), index=105>,\n111: <Qubit register=(151, \"ancilla\"), index=106>,\n112: <Qubit register=(151, \"ancilla\"), index=107>,\n113: <Qubit register=(151, \"ancilla\"), index=108>,\n114: <Qubit register=(151, \"ancilla\"), index=109>,\n115: <Qubit register=(151, \"ancilla\"), index=110>,\n116: <Qubit register=(151, \"ancilla\"), index=111>,\n117: <Qubit register=(151, \"ancilla\"), index=112>,\n118: <Qubit register=(151, \"ancilla\"), index=113>,\n119: <Qubit register=(151, \"ancilla\"), index=114>,\n120: <Qubit register=(151, \"ancilla\"), index=115>,\n121: <Qubit register=(151, \"ancilla\"), index=116>,\n122: <Qubit register=(151, \"ancilla\"), index=117>,\n123: <Qubit register=(151, \"ancilla\"), index=118>,\n124: <Qubit register=(151, \"ancilla\"), index=119>,\n125: <Qubit register=(151, \"ancilla\"), index=120>,\n126: <Qubit register=(151, \"ancilla\"), index=121>,\n127: <Qubit register=(151, \"ancilla\"), index=122>,\n128: <Qubit register=(151, \"ancilla\"), index=123>,\n129: <Qubit register=(151, \"ancilla\"), index=124>,\n130: <Qubit register=(151, \"ancilla\"), index=125>,\n131: <Qubit register=(151, \"ancilla\"), index=126>,\n132: <Qubit register=(151, \"ancilla\"), index=127>,\n133: <Qubit register=(151, \"ancilla\"), index=128>,\n134: <Qubit register=(151, \"ancilla\"), index=129>,\n135: <Qubit register=(151, \"ancilla\"), index=130>,\n136: <Qubit register=(151, \"ancilla\"), index=131>,\n137: <Qubit register=(151, \"ancilla\"), index=132>,\n138: <Qubit register=(151, \"ancilla\"), index=133>,\n139: <Qubit register=(151, \"ancilla\"), index=134>,\n140: <Qubit register=(151, \"ancilla\"), index=135>,\n141: <Qubit register=(151, \"ancilla\"), index=136>,\n142: <Qubit register=(151, \"ancilla\"), index=137>,\n143: <Qubit register=(151, \"ancilla\"), index=138>,\n144: <Qubit register=(151, \"ancilla\"), index=139>,\n145: <Qubit register=(151, \"ancilla\"), index=140>,\n146: <Qubit register=(151, \"ancilla\"), index=141>,\n147: <Qubit register=(151, \"ancilla\"), index=142>,\n148: <Qubit register=(151, \"ancilla\"), index=143>,\n149: <Qubit register=(151, \"ancilla\"), index=144>,\n150: <Qubit register=(151, \"ancilla\"), index=145>,\n151: <Qubit register=(151, \"ancilla\"), index=146>,\n152: <Qubit register=(151, \"ancilla\"), index=147>,\n153: <Qubit register=(151, \"ancilla\"), index=148>,\n154: <Qubit register=(151, \"ancilla\"), index=149>,\n155: <Qubit register=(151, \"ancilla\"), index=150>\n})",
+      "final_layout": null
+    }
+  },
+  "W_Y": -0.8107,
+  "W_Y_error": 0.004139840033141377,
+  "W_Y_ideal": 0.0,
+  "W_Y_tilde": 0.0,
+  "W_Y_tilde_error": 0.0,
+  "y_basis_result": {
+    "backend": "ibm_fez",
+    "backend_type": "hardware",
+    "backend_config": {
+      "backend_name": "ibm_fez",
+      "num_qubits": 156,
+      "processor_type": "Heron"
+    },
+    "job_id": "d5locdhh2mqc739a2ubg",
+    "mode": "coherence_witness",
+    "measurement_basis": "Y",
+    "mu": 1,
+    "shots": 20000,
+    "actual_shots": 20000,
+    "counts": {
+      "1100": 202,
+      "1000": 2405,
+      "0100": 2348,
+      "1011": 2134,
+      "0001": 2364,
+      "0111": 2124,
+      "0011": 219,
+      "1110": 2199,
+      "1101": 2272,
+      "0010": 2261,
+      "1001": 293,
+      "0110": 197,
+      "0000": 311,
+      "1111": 190,
+      "1010": 280,
+      "0101": 201
+    },
+    "W_Y": -0.8107,
+    "W_Y_error": 0.004139840033141377,
+    "W_Y_ideal": 0.0,
+    "W_Y_tilde": 0.0,
+    "W_Y_tilde_error": 0.0,
+    "parity_counts": {
+      "n_even": 1893,
+      "n_odd": 18107,
+      "p_even": 0.09465,
+      "p_odd": 0.90535
+    },
+    "circuit_stats": {
+      "num_qubits": 5,
+      "num_clbits": 4,
+      "depth": 9,
+      "size": 21,
+      "gate_counts": {
+        "h": 5,
+        "cx": 5,
+        "x": 3,
+        "sdg": 4
+      },
+      "two_qubit_gate_count": 5
+    },
+    "transpiled_depth": 17,
+    "transpiled_size": 42,
+    "transpiled_two_qubit_gates": 5,
+    "optimization_level": 2,
+    "physical_layout": {
+      "initial_layout": "Layout({\n16: <Qubit register=(5, \"q\"), index=0>,\n24: <Qubit register=(5, \"q\"), index=1>,\n23: <Qubit register=(5, \"q\"), index=2>,\n22: <Qubit register=(5, \"q\"), index=3>,\n21: <Qubit register=(5, \"q\"), index=4>,\n0: <Qubit register=(151, \"ancilla\"), index=0>,\n1: <Qubit register=(151, \"ancilla\"), index=1>,\n2: <Qubit register=(151, \"ancilla\"), index=2>,\n3: <Qubit register=(151, \"ancilla\"), index=3>,\n4: <Qubit register=(151, \"ancilla\"), index=4>,\n5: <Qubit register=(151, \"ancilla\"), index=5>,\n6: <Qubit register=(151, \"ancilla\"), index=6>,\n7: <Qubit register=(151, \"ancilla\"), index=7>,\n8: <Qubit register=(151, \"ancilla\"), index=8>,\n9: <Qubit register=(151, \"ancilla\"), index=9>,\n10: <Qubit register=(151, \"ancilla\"), index=10>,\n11: <Qubit register=(151, \"ancilla\"), index=11>,\n12: <Qubit register=(151, \"ancilla\"), index=12>,\n13: <Qubit register=(151, \"ancilla\"), index=13>,\n14: <Qubit register=(151, \"ancilla\"), index=14>,\n15: <Qubit register=(151, \"ancilla\"), index=15>,\n17: <Qubit register=(151, \"ancilla\"), index=16>,\n18: <Qubit register=(151, \"ancilla\"), index=17>,\n19: <Qubit register=(151, \"ancilla\"), index=18>,\n20: <Qubit register=(151, \"ancilla\"), index=19>,\n25: <Qubit register=(151, \"ancilla\"), index=20>,\n26: <Qubit register=(151, \"ancilla\"), index=21>,\n27: <Qubit register=(151, \"ancilla\"), index=22>,\n28: <Qubit register=(151, \"ancilla\"), index=23>,\n29: <Qubit register=(151, \"ancilla\"), index=24>,\n30: <Qubit register=(151, \"ancilla\"), index=25>,\n31: <Qubit register=(151, \"ancilla\"), index=26>,\n32: <Qubit register=(151, \"ancilla\"), index=27>,\n33: <Qubit register=(151, \"ancilla\"), index=28>,\n34: <Qubit register=(151, \"ancilla\"), index=29>,\n35: <Qubit register=(151, \"ancilla\"), index=30>,\n36: <Qubit register=(151, \"ancilla\"), index=31>,\n37: <Qubit register=(151, \"ancilla\"), index=32>,\n38: <Qubit register=(151, \"ancilla\"), index=33>,\n39: <Qubit register=(151, \"ancilla\"), index=34>,\n40: <Qubit register=(151, \"ancilla\"), index=35>,\n41: <Qubit register=(151, \"ancilla\"), index=36>,\n42: <Qubit register=(151, \"ancilla\"), index=37>,\n43: <Qubit register=(151, \"ancilla\"), index=38>,\n44: <Qubit register=(151, \"ancilla\"), index=39>,\n45: <Qubit register=(151, \"ancilla\"), index=40>,\n46: <Qubit register=(151, \"ancilla\"), index=41>,\n47: <Qubit register=(151, \"ancilla\"), index=42>,\n48: <Qubit register=(151, \"ancilla\"), index=43>,\n49: <Qubit register=(151, \"ancilla\"), index=44>,\n50: <Qubit register=(151, \"ancilla\"), index=45>,\n51: <Qubit register=(151, \"ancilla\"), index=46>,\n52: <Qubit register=(151, \"ancilla\"), index=47>,\n53: <Qubit register=(151, \"ancilla\"), index=48>,\n54: <Qubit register=(151, \"ancilla\"), index=49>,\n55: <Qubit register=(151, \"ancilla\"), index=50>,\n56: <Qubit register=(151, \"ancilla\"), index=51>,\n57: <Qubit register=(151, \"ancilla\"), index=52>,\n58: <Qubit register=(151, \"ancilla\"), index=53>,\n59: <Qubit register=(151, \"ancilla\"), index=54>,\n60: <Qubit register=(151, \"ancilla\"), index=55>,\n61: <Qubit register=(151, \"ancilla\"), index=56>,\n62: <Qubit register=(151, \"ancilla\"), index=57>,\n63: <Qubit register=(151, \"ancilla\"), index=58>,\n64: <Qubit register=(151, \"ancilla\"), index=59>,\n65: <Qubit register=(151, \"ancilla\"), index=60>,\n66: <Qubit register=(151, \"ancilla\"), index=61>,\n67: <Qubit register=(151, \"ancilla\"), index=62>,\n68: <Qubit register=(151, \"ancilla\"), index=63>,\n69: <Qubit register=(151, \"ancilla\"), index=64>,\n70: <Qubit register=(151, \"ancilla\"), index=65>,\n71: <Qubit register=(151, \"ancilla\"), index=66>,\n72: <Qubit register=(151, \"ancilla\"), index=67>,\n73: <Qubit register=(151, \"ancilla\"), index=68>,\n74: <Qubit register=(151, \"ancilla\"), index=69>,\n75: <Qubit register=(151, \"ancilla\"), index=70>,\n76: <Qubit register=(151, \"ancilla\"), index=71>,\n77: <Qubit register=(151, \"ancilla\"), index=72>,\n78: <Qubit register=(151, \"ancilla\"), index=73>,\n79: <Qubit register=(151, \"ancilla\"), index=74>,\n80: <Qubit register=(151, \"ancilla\"), index=75>,\n81: <Qubit register=(151, \"ancilla\"), index=76>,\n82: <Qubit register=(151, \"ancilla\"), index=77>,\n83: <Qubit register=(151, \"ancilla\"), index=78>,\n84: <Qubit register=(151, \"ancilla\"), index=79>,\n85: <Qubit register=(151, \"ancilla\"), index=80>,\n86: <Qubit register=(151, \"ancilla\"), index=81>,\n87: <Qubit register=(151, \"ancilla\"), index=82>,\n88: <Qubit register=(151, \"ancilla\"), index=83>,\n89: <Qubit register=(151, \"ancilla\"), index=84>,\n90: <Qubit register=(151, \"ancilla\"), index=85>,\n91: <Qubit register=(151, \"ancilla\"), index=86>,\n92: <Qubit register=(151, \"ancilla\"), index=87>,\n93: <Qubit register=(151, \"ancilla\"), index=88>,\n94: <Qubit register=(151, \"ancilla\"), index=89>,\n95: <Qubit register=(151, \"ancilla\"), index=90>,\n96: <Qubit register=(151, \"ancilla\"), index=91>,\n97: <Qubit register=(151, \"ancilla\"), index=92>,\n98: <Qubit register=(151, \"ancilla\"), index=93>,\n99: <Qubit register=(151, \"ancilla\"), index=94>,\n100: <Qubit register=(151, \"ancilla\"), index=95>,\n101: <Qubit register=(151, \"ancilla\"), index=96>,\n102: <Qubit register=(151, \"ancilla\"), index=97>,\n103: <Qubit register=(151, \"ancilla\"), index=98>,\n104: <Qubit register=(151, \"ancilla\"), index=99>,\n105: <Qubit register=(151, \"ancilla\"), index=100>,\n106: <Qubit register=(151, \"ancilla\"), index=101>,\n107: <Qubit register=(151, \"ancilla\"), index=102>,\n108: <Qubit register=(151, \"ancilla\"), index=103>,\n109: <Qubit register=(151, \"ancilla\"), index=104>,\n110: <Qubit register=(151, \"ancilla\"), index=105>,\n111: <Qubit register=(151, \"ancilla\"), index=106>,\n112: <Qubit register=(151, \"ancilla\"), index=107>,\n113: <Qubit register=(151, \"ancilla\"), index=108>,\n114: <Qubit register=(151, \"ancilla\"), index=109>,\n115: <Qubit register=(151, \"ancilla\"), index=110>,\n116: <Qubit register=(151, \"ancilla\"), index=111>,\n117: <Qubit register=(151, \"ancilla\"), index=112>,\n118: <Qubit register=(151, \"ancilla\"), index=113>,\n119: <Qubit register=(151, \"ancilla\"), index=114>,\n120: <Qubit register=(151, \"ancilla\"), index=115>,\n121: <Qubit register=(151, \"ancilla\"), index=116>,\n122: <Qubit register=(151, \"ancilla\"), index=117>,\n123: <Qubit register=(151, \"ancilla\"), index=118>,\n124: <Qubit register=(151, \"ancilla\"), index=119>,\n125: <Qubit register=(151, \"ancilla\"), index=120>,\n126: <Qubit register=(151, \"ancilla\"), index=121>,\n127: <Qubit register=(151, \"ancilla\"), index=122>,\n128: <Qubit register=(151, \"ancilla\"), index=123>,\n129: <Qubit register=(151, \"ancilla\"), index=124>,\n130: <Qubit register=(151, \"ancilla\"), index=125>,\n131: <Qubit register=(151, \"ancilla\"), index=126>,\n132: <Qubit register=(151, \"ancilla\"), index=127>,\n133: <Qubit register=(151, \"ancilla\"), index=128>,\n134: <Qubit register=(151, \"ancilla\"), index=129>,\n135: <Qubit register=(151, \"ancilla\"), index=130>,\n136: <Qubit register=(151, \"ancilla\"), index=131>,\n137: <Qubit register=(151, \"ancilla\"), index=132>,\n138: <Qubit register=(151, \"ancilla\"), index=133>,\n139: <Qubit register=(151, \"ancilla\"), index=134>,\n140: <Qubit register=(151, \"ancilla\"), index=135>,\n141: <Qubit register=(151, \"ancilla\"), index=136>,\n142: <Qubit register=(151, \"ancilla\"), index=137>,\n143: <Qubit register=(151, \"ancilla\"), index=138>,\n144: <Qubit register=(151, \"ancilla\"), index=139>,\n145: <Qubit register=(151, \"ancilla\"), index=140>,\n146: <Qubit register=(151, \"ancilla\"), index=141>,\n147: <Qubit register=(151, \"ancilla\"), index=142>,\n148: <Qubit register=(151, \"ancilla\"), index=143>,\n149: <Qubit register=(151, \"ancilla\"), index=144>,\n150: <Qubit register=(151, \"ancilla\"), index=145>,\n151: <Qubit register=(151, \"ancilla\"), index=146>,\n152: <Qubit register=(151, \"ancilla\"), index=147>,\n153: <Qubit register=(151, \"ancilla\"), index=148>,\n154: <Qubit register=(151, \"ancilla\"), index=149>,\n155: <Qubit register=(151, \"ancilla\"), index=150>\n})",
+      "final_layout": null
+    }
+  },
+  "C_magnitude": 1.1672611233138883,
+  "C_magnitude_error": 0.003986879658025441,
+  "timestamp": "20260117_205321",
+  "qiskit_version": {
+    "qiskit": "2.3.0",
+    "qiskit_aer": "0.17.2",
+    "qiskit_ibm_runtime": "0.45.0"
+  }
+}

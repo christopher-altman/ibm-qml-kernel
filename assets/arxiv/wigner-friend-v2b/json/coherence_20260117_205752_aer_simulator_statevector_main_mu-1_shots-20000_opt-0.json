@@ -1,0 +1,51 @@
+{
+  "backend": "aer_simulator_statevector",
+  "backend_type": "ideal",
+  "experiment_mode": "coherence_witness",
+  "measurement_basis": "Y",
+  "circuit_mode": "main",
+  "mu": 1,
+  "shots": 20000,
+  "counts": {
+    "0111": 2537,
+    "0001": 2561,
+    "0100": 2458,
+    "0010": 2500,
+    "1110": 2458,
+    "1000": 2492,
+    "1101": 2445,
+    "1011": 2549
+  },
+  "W_Y": -1.0,
+  "W_Y_error": 0.0,
+  "W_Y_ideal": 0.0,
+  "W_Y_tilde": 0.0,
+  "W_Y_tilde_error": 0.0,
+  "parity_counts": {
+    "n_even": 0,
+    "n_odd": 20000,
+    "p_even": 0.0,
+    "p_odd": 1.0
+  },
+  "circuit_stats": {
+    "num_qubits": 5,
+    "num_clbits": 4,
+    "depth": 10,
+    "size": 21,
+    "gate_counts": {
+      "h": 5,
+      "cx": 5,
+      "x": 3,
+      "sdg": 4
+    },
+    "two_qubit_gate_count": 5
+  },
+  "transpiled_depth": 10,
+  "transpiled_size": 21,
+  "optimization_level": 0,
+  "timestamp": "20260117_205752",
+  "qiskit_version": {
+    "qiskit": "2.3.0",
+    "qiskit_aer": "0.17.2"
+  }
+}
