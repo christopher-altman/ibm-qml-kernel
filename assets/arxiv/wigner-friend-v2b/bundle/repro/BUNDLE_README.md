@@ -1,4 +1,5 @@
-# Branch Transfer Experiment - arXiv Bundle v2b
+# Wigner's Friend as a Circuit: Inter-Branch Communication Witness Benchmarks on Superconducting Quantum Hardware (January 2026)
+# Branch Transfer Experiment - arXiv Bundle (v2b)
 
 ## Overview
 
@@ -14,16 +15,19 @@ This bundle contains complete experimental results for the branch-conditioned me
 ## Experiments
 
 ### Hardware Runs (Fresh)
+
 1. **Coherence Witness (X+Y basis)** - Job IDs: d5lobdt9j2ac739k1a0g (X), d5locdhh2mqc739a2ubg (Y)
 2. **Visibility Protocol (rp_z)** - Job ID: d5locnd9j2ac739k1b80
 
 ### Backend-Matched Noise Simulations
+
 - Noise model: Built from ibm_fez backend properties via NoiseModel.from_backend()
 - Calibration snapshots saved in appendix/
 
 ## Contents
 
 ### json/ (8 files)
+
 - `hw_coherence_..._ibm_fez_...json` - Hardware coherence witness (X+Y)
 - `hw_..._ibm_fez_...json` - Hardware visibility (rp_z)
 - `coherence_..._noisy_ibm_fez_...json` (x2) - Backend-matched noisy coherence (X, Y)
@@ -32,6 +36,7 @@ This bundle contains complete experimental results for the branch-conditioned me
 - `sim_..._statevector_...json` - Ideal visibility
 
 ### figures/ (7 PNG files)
+
 - `visibility_comparison.png` - V across ideal/noisy/hardware
 - `coherence_comparison.png` - W_X, W_Y, |C| across backends
 - `pr_distribution.png` - Measurement outcome distributions
@@ -39,17 +44,20 @@ This bundle contains complete experimental results for the branch-conditioned me
 - `collapse_forecast_*.png` - Decoherence model predictions
 
 ### appendix/ (3 files)
+
 - `ibm_fez_*_properties.json` - Backend calibration snapshots (timestamps included)
 
 ## JSON Field Definitions
 
 ### Visibility Protocol (rp_z mode)
+
 - `visibility`: V = |P(R=0|P=1) - P(R=1|P=1)|
 - `visibility_error`: Statistical uncertainty (Poisson)
 - `conditional_probabilities`: P(P|R) breakdown
 - `counts`: Raw measurement outcomes
 
 ### Coherence Witness (coherence_witness mode)
+
 - `W_X`, `W_Y`: Raw coherence witness values
 - `W_X_error`, `W_Y_error`: Statistical uncertainties
 - `W_X_ideal`, `W_Y_ideal`: Ideal (statevector) reference values
@@ -60,6 +68,7 @@ This bundle contains complete experimental results for the branch-conditioned me
 - `parity_counts`: Even/odd parity statistics
 
 ### Backend-Matched Noise Metadata
+
 - `noise_model_backend`: "ibm_fez" (when using --noise-from-backend)
 - `noise_snapshot_path`: Path to calibration snapshot JSON
 
@@ -92,25 +101,26 @@ python3.10 -m experiments.branch_transfer.run_sim --mode rp_z --mu 1 --shots 200
 python3.10 -m experiments.branch_transfer.analyze --artifacts-dir artifacts/branch_transfer --figures-dir artifacts/branch_transfer/figures --plot-all
 ```
 
+### Claim: Hardware visibility exceeded noisy sim prediction
+
+- Figure: `visibility_comparison.png`
+- JSON fields: `visibility` in hw_20260117_205401_ibm_fez_*.json (0.8771) vs sim_20260117_205835_*_noisy_ibm_fez_*.json (0.9381)
+- Note: Backend-matched noise model (ibm_fez) shows V=0.938, hardware V=0.877
+
+### Claim: Coherence magnitude preserved on hardware
+
+- Figure: `coherence_comparison.png`  
+- JSON fields: `C_magnitude` in hw_coherence_*_ibm_fez_*.json
+- Hardware: |C| = 1.1673 ± 0.004 (not normalized; sqrt(W_X^2+W_Y^2))
+
+### Claim: Backend-matched noise more accurate than proxy model
+
+- Comparison: Backend-matched (ibm_fez NoiseModel.from_backend) vs legacy (ibm_brisbane params)
+- Appendix: `ibm_fez_*_properties.json` documents exact calibration used
+
 ## Software Versions
 
 - Python: 3.10.19
 - Qiskit: 2.3.0
 - Qiskit Aer: 0.17.2
 - Qiskit IBM Runtime: 0.45.0
-
-## Citation Guidance for GPT-5.2 Deep Research
-
-### Claim: Hardware visibility exceeded noisy sim prediction
-- Figure: `visibility_comparison.png`
-- JSON fields: `visibility` in hw_20260117_205401_ibm_fez_*.json (0.8771) vs sim_20260117_205835_*_noisy_ibm_fez_*.json (0.9381)
-- Note: Backend-matched noise model (ibm_fez) shows V=0.938, hardware V=0.877
-
-### Claim: Coherence magnitude preserved on hardware
-- Figure: `coherence_comparison.png`  
-- JSON fields: `C_magnitude` in hw_coherence_*_ibm_fez_*.json
-- Hardware: |C| = 1.1673 ± 0.004 (not normalized; sqrt(W_X^2+W_Y^2))
-
-### Claim: Backend-matched noise more accurate than proxy model
-- Comparison: Backend-matched (ibm_fez NoiseModel.from_backend) vs legacy (ibm_brisbane params)
-- Appendix: `ibm_fez_*_properties.json` documents exact calibration used
