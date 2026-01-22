@@ -1,0 +1,61 @@
+{
+  "backend": "aer_simulator_noisy_ibm_fez",
+  "backend_type": "noisy_simulator",
+  "noise_source": "ibm_fez",
+  "experiment_mode": "coherence_witness",
+  "measurement_basis": "X",
+  "circuit_mode": "main",
+  "mu": 1,
+  "shots": 20000,
+  "counts": {
+    "0010": 117,
+    "1000": 120,
+    "1001": 2387,
+    "0101": 2376,
+    "1010": 2333,
+    "0000": 2350,
+    "1110": 111,
+    "0100": 124,
+    "1100": 2319,
+    "1011": 125,
+    "0111": 136,
+    "1101": 158,
+    "1111": 2382,
+    "0001": 125,
+    "0011": 2384,
+    "0110": 2453
+  },
+  "W_X": 0.8984000000000001,
+  "W_X_error": 0.0031054584202658392,
+  "W_X_ideal": 1.0,
+  "W_X_tilde": 0.8984000000000001,
+  "W_X_tilde_error": 0.0031054584202658392,
+  "parity_counts": {
+    "n_even": 18984,
+    "n_odd": 1016,
+    "p_even": 0.9492,
+    "p_odd": 0.0508
+  },
+  "circuit_stats": {
+    "num_qubits": 5,
+    "num_clbits": 4,
+    "depth": 8,
+    "size": 17,
+    "gate_counts": {
+      "h": 5,
+      "cx": 5,
+      "x": 3
+    },
+    "two_qubit_gate_count": 5
+  },
+  "transpiled_depth": 21,
+  "transpiled_size": 49,
+  "optimization_level": 1,
+  "noise_model_backend": "ibm_fez",
+  "noise_snapshot_path": "artifacts/branch_transfer/noise_snapshots/ibm_fez_20260117_205750_properties.json",
+  "timestamp": "20260117_205752",
+  "qiskit_version": {
+    "qiskit": "2.3.0",
+    "qiskit_aer": "0.17.2"
+  }
+}
