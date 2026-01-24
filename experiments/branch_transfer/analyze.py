@@ -820,8 +820,12 @@ def generate_analysis_report(
 
     # Compute visibility degradation
     if ideal_results and noisy_results:
-        ideal_V = np.mean([r['visibility'] for r in ideal_results])
-        noisy_V = np.mean([r['visibility'] for r in noisy_results])
+        ideal_vals = [r.get('visibility') for r in ideal_results]
+        ideal_vals = [v for v in ideal_vals if v is not None]
+        ideal_V = float(np.mean(ideal_vals)) if ideal_vals else float('nan')
+        noisy_vals = [r.get('visibility') for r in noisy_results]
+        noisy_vals = [v for v in noisy_vals if v is not None]
+        noisy_V = float(np.mean(noisy_vals)) if noisy_vals else float('nan')
         analysis['visibility_degradation'] = {
             'ideal_to_noisy': ideal_V - noisy_V,
             'relative_loss': (ideal_V - noisy_V) / ideal_V if ideal_V > 0 else 0,
@@ -1029,17 +1033,22 @@ def main():
 
         # Load and plot coherence sweep if available (coherence witness-based)
         coherence_files = list(artifacts_dir.glob('coherence_sweep_*.json'))
+        seen_coherence_figs = set()
         for cf in coherence_files:
             with open(cf, 'r') as f:
                 sweep_data = json.load(f)
             model = sweep_data.get('collapse_model', 'unknown')
             noise = 'noisy' if sweep_data.get('add_hardware_noise') else 'ideal'
             basis = sweep_data.get('measurement_basis', 'X')
+            fig_name = f'coherence_forecast_{model}_{noise}_{basis}.png'
+            if fig_name in seen_coherence_figs:
+                continue
+            seen_coherence_figs.add(fig_name)
             export_hero_if_enabled(
                 plot_coherence_forecast,
                 {
                     'sweep_data': sweep_data,
-                    'output_path': figures_dir / f'coherence_forecast_{model}_{noise}_{basis}.png',
+                    'output_path': figures_dir / fig_name,
                     'title': fr'$W_{{{basis}}}(\gamma)$ Forecast: {model} ({noise} baseline)'
                 },
                 hero_dir=hero_dir,
