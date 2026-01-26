@@ -52,6 +52,7 @@
   - [Artifacts & Reproducibility](#artifacts--reproducibility)
   - [Collapse / Nonunitary Channel Constraint Analysis](#collapse--nonunitary-channel-constraint-analysis)
   - [Scaling Roadmap](#scaling-roadmap)
+- [Publication, Dataset, and DOI](#publication-dataset-and-doi)
 - [Roadmap](#roadmap)
 - [References](#references)
 - [Citations](#citations)
