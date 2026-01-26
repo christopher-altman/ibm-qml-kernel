@@ -1,6 +1,6 @@
 # Quantum Kernel Methods on IBM Quantum Hardware
 
-*Quantum kernel estimation for binary classification with realistic IBM Quantum hardware noise modeling and optional PSD (positive semidefinite) kernel projection for numerical stability.*
+*Quantum kernel estimation for binary classification with realistic hardware noise modeling and optional PSD (positive semidefinite) kernel projection for numerical stability, plus reproducible branch-transfer coherence-witness experiments executed on superconducting quantum hardware.*
 
 <br>
 
