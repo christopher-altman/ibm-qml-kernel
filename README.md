@@ -1,12 +1,12 @@
 # Quantum Kernel Methods on IBM Quantum Hardware
 
-*Quantum kernel estimation for binary classification with realistic hardware noise modeling and optional PSD (positive semidefinite) kernel projection for numerical stability, plus reproducible branch-transfer coherence-witness experiments executed on superconducting quantum hardware.*
+*Quantum kernel estimation for binary classification under hardware-calibrated noise, with optional PSD (positive semidefinite) projection for numerical stability — plus reproducible branch-transfer coherence-witness experiments on superconducting quantum hardware.*
 
 <br>
 
 
 [![arXiv](https://img.shields.io/badge/arXiv-2601.16004-b31b1b.svg)](https://arxiv.org/abs/2601.16004)
-[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18335979-blue)](https://doi.org/10.5281/zenodo.18335978)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.18335979-blue)](https://doi.org/10.5281/zenodo.18335979)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Google Scholar](https://img.shields.io/badge/Google_Scholar-Profile-blue?logo=google-scholar)](https://scholar.google.com/citations?user=tvwpCcgAAAAJ)
@@ -26,7 +26,7 @@
 
 <br>
 
-> **TL;DR:** Realistic IBM Quantum noise (T1≈200 µs, T2≈135 µs, ECR error≈0.8%) degrades quantum kernel fidelity by 5–15% but classification capability persists. PSD projection ensures numerical stability under finite-shot noise with negligible impact on well-conditioned kernels.
+> **TL;DR:** Realistic IBM Quantum noise degrades quantum-kernel fidelity but classification capability persists; PSD projection stabilizes Gram matrices under finite-shot noise. This repo also includes a fully provenance-tracked branch-transfer coherence-witness benchmark (“Wigner’s Friend as a Circuit”, [arXiv:2601.08102](https://arxiv.org/abs/2601.08102)) with archived artifacts on Zenodo.
 
 ---
 
