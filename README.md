@@ -549,7 +549,7 @@ This provides a concrete path to study how inter-branch communication degrades w
 
 ## Publication, Dataset, and DOI
 
-The branch-transfer experiment described above is formally documented in [arXiv:2601.16004](https://arxiv.org/abs/2601.16004). This repository serves as the reproducible implementation and benchmarking harness accompanying that paper—connecting the theoretical framing of inter-branch communication to the circuit primitive, IBM hardware execution on ibm_fez, and the resulting benchmark artifacts. All raw data, simulation baselines, and analysis scripts required to reproduce the figures and metrics are included here or in the linked dataset.
+The branch-transfer experiment described above is formally documented in [arXiv:2601.16004](https://arxiv.org/abs/2601.16004). This repository serves as the reproducible implementation and benchmarking harness accompanying that paper—connecting the theoretical framing of inter-branch communication to the circuit primitive, IBM hardware execution on ibm_fez, and the resulting benchmark artifacts. All raw data, simulation baselines, and analysis scripts required to reproduce the figures and metrics are included here and in the linked dataset.
 
 **Highlights:**
 
