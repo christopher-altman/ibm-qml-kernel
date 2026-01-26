@@ -4,12 +4,12 @@
 
 <br>
 
+[![arXiv](https://img.shields.io/badge/arXiv-2601.16004-b31b1b.svg)](https://arxiv.org/abs/2601.16004)
 [![DOI](https://zenodo.org/badge/1134737019.svg)](https://doi.org/10.5281/zenodo.18335978)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Google Scholar](https://img.shields.io/badge/Google_Scholar-Profile-blue?logo=google-scholar)](https://scholar.google.com/citations?user=tvwpCcgAAAAJ)
 [![Hugging Face](https://img.shields.io/badge/huggingface-Coh%C3%A6rence-white)](https://huggingface.co/Cohaerence)
-
 [![CI](https://github.com/christopher-altman/ibm-qml-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/christopher-altman/ibm-qml-kernel/actions/workflows/ci.yml)
 [![X](https://img.shields.io/badge/X-@coherence-blue)](https://x.com/coherence)
 [![Website](https://img.shields.io/badge/website-christopheraltman.com-green)](https://www.christopheraltman.com)
@@ -546,6 +546,18 @@ This provides a concrete path to study how inter-branch communication degrades w
 
 ---
 
+## Publication, Dataset, and DOI
+
+The branch-transfer experiment described above is formally documented in [arXiv:2601.16004](https://arxiv.org/abs/2601.16004). This repository serves as the reproducible implementation and benchmarking harness accompanying that paper—connecting the theoretical framing of inter-branch communication to the circuit primitive, IBM hardware execution on ibm_fez, and the resulting benchmark artifacts. All raw data, simulation baselines, and analysis scripts required to reproduce the figures and metrics are included here or in the linked dataset.
+
+**Highlights:**
+
+- [Paper (arXiv)](https://arxiv.org/abs/2601.16004) — full preprint with theoretical background and experimental results
+- [Dataset (Hugging Face)](https://huggingface.co/datasets/Cohaerence/ibm-qml-kernel) — artifact dataset including hardware results, simulation baselines, and calibration snapshots
+- [Archive (Zenodo DOI mirror)](https://zenodo.org/records/18335979) — versioned archive with persistent DOI for citation
+
+---
+
 ## Roadmap
 
 - [ ] **Error mitigation**: Implement zero-noise extrapolation (ZNE) and probabilistic error cancellation (PEC)
@@ -559,17 +571,22 @@ This provides a concrete path to study how inter-branch communication degrades w
 
 ## References
 
-1. Havlíček, V., et al. (2019). Supervised learning with quantum-enhanced feature spaces. *Nature*, 567(7747), 209–212. [DOI: 10.1038/s41586-019-0980-2](https://doi.org/10.1038/s41586-019-0980-2)
+1. Altman, C. (2026). Wigner's Friend as a Circuit: Inter-Branch Communication Witness Benchmarks on Superconducting Quantum Hardware. *arXiv:2601. 16004*. quant-ph > [arXiv:2601. 16004](https://arxiv.org/abs/2601.16004)
 
-2. Schuld, M., & Killoran, N. (2019). Quantum machine learning in feature Hilbert spaces. *Physical Review Letters*, 122(4), 040504. [DOI: 10.1103/PhysRevLett.122.040504](https://doi.org/10.1103/PhysRevLett.122.040504)
+2. Violaris, M. (2026). Quantum observers can communicate across multiverse branches. *arXiv:2601.08102*. quant-ph > [arXiv:2601.08102](https://arxiv.org/abs/2601.08102)
 
-3. IBM Quantum Documentation (2026). Hardware specifications for Eagle r3 processors. [quantum.ibm.com/docs](https://quantum.ibm.com/docs)
+3. Mukherjee, S. and Hance, J (2025). Limits of absoluteness of observed events in timelike scenarios: A no-go theore.  *arXiv: 2510.26562* quant-ph: [arXiv:2510.26562](https://arxiv.org/abs/2510.26562)
 
-4. Temme, K., Bravyi, S., & Gambetta, J. M. (2017). Error mitigation for short-depth quantum circuits. *Physical Review Letters*, 119(18), 180509. [DOI: 10.1103/PhysRevLett.119.180509](https://doi.org/10.1103/PhysRevLett.119.180509)
+4. Havlíček, V., et al. (2019). Supervised learning with quantum-enhanced feature spaces. *Nature*, 567(7747), 209–212. [DOI: 10.1038/s41586-019-0980-2](https://doi.org/10.1038/s41586-019-0980-2)
 
-5. Abbas, A., et al. (2021). The power of quantum neural networks. *Nature Computational Science*, 1(6), 403–409. [DOI: 10.1038/s43588-021-00084-1](https://doi.org/10.1038/s43588-021-00084-1)
+5. Schuld, M., & Killoran, N. (2019). Quantum machine learning in feature Hilbert spaces. *Physical Review Letters*, 122(4), 040504. [DOI: 10.1103/PhysRevLett.122.040504](https://doi.org/10.1103/PhysRevLett.122.040504)
 
-6. Violaris, M. (2026). Quantum observers can communicate across multiverse branches. *arXiv:2601.08102*. [arXiv:2601.08102](https://arxiv.org/abs/2601.08102)
+6. IBM Quantum Documentation (2026). Hardware specifications for Eagle r3 processors. [quantum.ibm.com/docs](https://quantum.ibm.com/docs)
+
+7. Temme, K., Bravyi, S., & Gambetta, J. M. (2017). Error mitigation for short-depth quantum circuits. *Physical Review Letters*, 119(18), 180509. [DOI: 10.1103/PhysRevLett.119.180509](https://doi.org/10.1103/PhysRevLett.119.180509)
+
+8. Abbas, A., et al. (2021). The power of quantum neural networks. *Nature Computational Science*, 1(6), 403–409. [DOI: 10.1038/s43588-021-00084-1](https://doi.org/10.1038/s43588-021-00084-1)
+
 
 ---
 
