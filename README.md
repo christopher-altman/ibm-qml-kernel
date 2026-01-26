@@ -9,6 +9,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Google Scholar](https://img.shields.io/badge/Google_Scholar-Profile-blue?logo=google-scholar)](https://scholar.google.com/citations?user=tvwpCcgAAAAJ)
+
 [![Hugging Face](https://img.shields.io/badge/huggingface-Coh%C3%A6rence-white)](https://huggingface.co/Cohaerence)
 [![CI](https://github.com/christopher-altman/ibm-qml-kernel/actions/workflows/ci.yml/badge.svg)](https://github.com/christopher-altman/ibm-qml-kernel/actions/workflows/ci.yml)
 [![X](https://img.shields.io/badge/X-@coherence-blue)](https://x.com/coherence)
