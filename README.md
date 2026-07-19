@@ -617,11 +617,8 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ## Contact
 
-- **Website:** [christopheraltman.com](https://christopheraltman.com)
-- **Research portfolio:** https://lab.christopheraltman.com/
-- **GitHub:** [github.com/christopher-altman](https://github.com/christopher-altman)
-- **Google Scholar:** [scholar.google.com/citations?user=tvwpCcgAAAAJ](https://scholar.google.com/citations?user=tvwpCcgAAAAJ)
-- **Email:** x@christopheraltman.com
+[Frontier Research Lab](https://lab.christopheraltman.com) ・ [Continuation Observatory](https://continuationobservatory.org) ・ [Website](https://christopheraltman.com) ・ [GitHub](https://github.com/christopher-altman) ・ [Google Scholar](https://scholar.google.com/citations?user=tvwpCcgAAAAJ) ・ [Bio](https://th-pedia.org/wiki/Christopher_Altman) ・ [Email](mailto:x@christopheraltman.com)
+
 
 ---
 
